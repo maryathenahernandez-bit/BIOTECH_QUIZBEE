@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioTech Reviewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #ffffff;
+    --mint-light: #e8f8f5;
+    --mint: #b2ece3;
+    --sky: #6dbfed;
+    --teal: #1a7f8e;
+    --forest: #1a7a3c;
+    --sage: #b5cc8e;
+    --dark: #0d3b2e;
+    --card-bg: #f0fbf8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, var(--mint-light) 0%, #d4f0e8 40%, #c5e8f5 100%);
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    background: linear-gradient(90deg, var(--teal), var(--forest));
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 60px;
+  }
+
+  .nav-logo {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: white;
+    margin-right: 1.5rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .nav-logo span { color: var(--mint); }
+
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.2); }
+
+  .dropdown { position: relative; }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    min-width: 260px;
+    overflow: hidden;
+    z-index: 200;
+  }
+
+  .dropdown:hover .dropdown-menu { display: block; }
+
+  .dropdown-item {
+    display: block;
+    padding: 0.8rem 1.2rem;
+    color: var(--dark);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .dropdown-item:hover { background: var(--mint-light); border-left-color: var(--teal); }
+  .dropdown-item.active { background: var(--mint-light); border-left-color: var(--forest); color: var(--forest); }
+  .dropdown-item.locked { color: #aaa; cursor: not-allowed; }
+  .dropdown-item.locked:hover { background: #f5f5f5; border-left-color: #ddd; }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== HOME ===== */
+  #home {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .home-hero {
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    border-radius: 24px;
+    padding: 3.5rem 4rem;
+    color: white;
+    max-width: 700px;
+    box-shadow: 0 20px 60px rgba(26,127,142,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .home-hero::before {
+    content: '🧬';
+    position: absolute;
+    font-size: 10rem;
+    opacity: 0.08;
+    right: -2rem;
+    top: -2rem;
+  }
+
+  .home-hero h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  }
+
+  .home-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .home-cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2.5rem;
+    max-width: 900px;
+  }
+
+  .home-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    width: 200px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 3px solid transparent;
+  }
+
+  .home-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(26,127,142,0.2); border-color: var(--teal); }
+
+  .home-card .icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .home-card h3 { font-size: 1rem; font-weight: 800; color: var(--dark); }
+  .home-card p { font-size: 0.8rem; color: #666; margin-top: 0.4rem; }
+
+  .badge-soon {
+    background: var(--sage);
+    color: var(--dark);
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-weight: 700;
+  }
+
+  /* ===== REVIEWER ===== */
+  #reviewer {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .module-header {
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 10px 30px rgba(26,127,142,0.3);
+  }
+
+  .module-header .module-icon { font-size: 3rem; }
+
+  .module-header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+
+  .module-header p { opacity: 0.9; font-size: 0.95rem; margin-top: 0.3rem; }
+
+  /* Section Headers */
+  .section-header {
+    background: linear-gradient(90deg, var(--teal), var(--sky));
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px 12px 0 0;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .content-card {
+    background: white;
+    border-radius: 0 0 12px 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1px solid var(--mint);
+    border-top: none;
+  }
+
+  .section-block { margin-bottom: 2rem; }
+
+  /* Objectives */
+  .objective-list { list-style: none; }
+
+  .objective-list li {
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background: var(--card-bg);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-weight: 600;
+    border-left: 4px solid var(--teal);
+    line-height: 1.5;
+  }
+
+  .objective-list li .num {
+    background: var(--teal);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Info Grid */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+
+  .info-box {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    border: 2px solid var(--mint);
+  }
+
+  .info-box h4 {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.6rem;
+  }
+
+  .info-box ul { list-style: none; }
+
+  .info-box ul li {
+    padding: 0.3rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--mint);
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .info-box ul li:last-child { border-bottom: none; }
+  .info-box ul li::before { content: '•'; color: var(--teal); font-weight: 900; }
+
+  /* Definition Cards */
+  .def-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    border-left: 5px solid var(--sky);
+  }
+
+  .def-card .term {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--teal);
+    margin-bottom: 0.3rem;
+  }
+
+  .def-card .definition { font-size: 0.9rem; line-height: 1.6; }
+
+  /* Process Steps */
+  .process-steps { display: flex; flex-direction: column; gap: 0.8rem; }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--mint);
+  }
+
+  .step-num {
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .step-text { font-size: 0.9rem; line-height: 1.5; padding-top: 0.2rem; }
+
+  /* Compare Table */
+  .compare-table { width: 100%; border-collapse: collapse; }
+
+  .compare-table th {
+    background: linear-gradient(90deg, var(--teal), var(--sky));
+    color: white;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .compare-table th:first-child { border-radius: 8px 0 0 0; }
+  .compare-table th:last-child { border-radius: 0 8px 0 0; }
+
+  .compare-table td {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--mint);
+    vertical-align: top;
+  }
+
+  .compare-table tr:nth-child(even) td { background: var(--card-bg); }
+  .compare-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  .compare-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .tag-teal { background: var(--mint); color: var(--teal); }
+  .tag-green { background: #d4f0dc; color: var(--forest); }
+  .tag-blue { background: #d4eaf5; color: #1a5a8e; }
+
+  /* Highlight boxes */
+  .highlight {
+    background: linear-gradient(135deg, #e8f8f5, #d4eefb);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+    border: 2px solid var(--mint);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .highlight strong { color: var(--teal); }
+
+  .highlight-green {
+    background: linear-gradient(135deg, #e8f5ec, #d4f0dc);
+    border-color: #a5d6b0;
+  }
+
+  .highlight-green strong { color: var(--forest); }
+
+  /* Vaccine type cards */
+  .vaccine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  @media (max-width: 600px) { .vaccine-grid { grid-template-columns: 1fr; } }
+
+  .vaccine-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 2px solid var(--mint);
+  }
+
+  .vaccine-card h4 {
+    font-weight: 800;
+    color: var(--teal);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .vaccine-card p { font-size: 0.88rem; line-height: 1.5; }
+
+  .vaccine-card .examples {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: #555;
+    font-style: italic;
+  }
+
+  /* ===== FLASHCARDS ===== */
+  #flashcards {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .flashcard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .flashcard-header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2rem;
+    color: var(--teal);
+    font-weight: 800;
+  }
+
+  .flashcard-header p { color: #555; margin-top: 0.3rem; }
+
+  .flashcard-module-select {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .module-select-btn {
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    border: 2px solid var(--mint);
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--dark);
+  }
+
+  .module-select-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
+  .module-select-btn.locked { opacity: 0.4; cursor: not-allowed; }
+
+  .flashcard-counter {
+    text-align: center;
+    color: #555;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .card-scene {
+    perspective: 1200px;
+    height: 280px;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-inner.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  }
+
+  .card-front {
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    color: white;
+  }
+
+  .card-front .card-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  .card-front .card-term {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .card-back {
+    background: white;
+    border: 3px solid var(--mint);
+    transform: rotateY(180deg);
+    color: var(--dark);
+  }
+
+  .card-back .card-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--teal);
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  .card-back .card-def {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #333;
+  }
+
+  .card-hint {
+    text-align: center;
+    color: #888;
+    font-size: 0.82rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .flashcard-nav {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fc-btn {
+    background: white;
+    border: 2px solid var(--mint);
+    color: var(--dark);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    padding: 0.6rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .fc-btn:hover { background: var(--teal); color: white; border-color: var(--teal); }
+  .fc-btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
+  .fc-btn.primary:hover { background: var(--forest); border-color: var(--forest); }
+
+  .progress-bar-wrap {
+    background: var(--mint);
+    border-radius: 100px;
+    height: 6px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--sky));
+    border-radius: 100px;
+    transition: width 0.3s;
+  }
+
+  /* ===== QUIZ ===== */
+  #quiz {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .quiz-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .quiz-header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2rem;
+    color: var(--teal);
+    font-weight: 800;
+  }
+
+  .quiz-module-select {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Quiz Start Screen */
+  .quiz-start {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    border: 2px solid var(--mint);
+  }
+
+  .quiz-start .icon { font-size: 4rem; margin-bottom: 1rem; }
+  .quiz-start h2 { font-family: 'Baloo 2', cursive; font-size: 1.6rem; color: var(--teal); margin-bottom: 0.5rem; }
+  .quiz-start p { color: #666; margin-bottom: 1.5rem; }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    color: white;
+    border: none;
+    padding: 0.9rem 2.5rem;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(26,127,142,0.3);
+  }
+
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,127,142,0.4); }
+
+  /* Quiz Question */
+  .quiz-question-wrap { display: none; }
+  .quiz-question-wrap.active { display: block; }
+
+  .quiz-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #555;
+  }
+
+  .quiz-score-badge {
+    background: var(--teal);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+  }
+
+  .question-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 2px solid var(--mint);
+    margin-bottom: 1rem;
+  }
+
+  .question-type-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.8rem;
+  }
+
+  .type-mc { background: #d4eefb; color: #1a5a8e; }
+  .type-tf { background: #d4f0e8; color: var(--forest); }
+  .type-id { background: #fef3d4; color: #8a6a00; }
+
+  .question-text {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 1.2rem;
+    color: var(--dark);
+  }
+
+  .options-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .option-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--mint);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    color: var(--dark);
+  }
+
+  .option-btn:hover:not(:disabled) { background: var(--mint-light); border-color: var(--teal); }
+  .option-btn.correct { background: #d4f0dc; border-color: var(--forest); color: var(--forest); }
+  .option-btn.wrong { background: #fde8e8; border-color: #e55; color: #c00; }
+  .option-btn:disabled { cursor: not-allowed; }
+
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mint);
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option-btn.correct .option-letter { background: var(--forest); color: white; }
+  .option-btn.wrong .option-letter { background: #e55; color: white; }
+
+  .feedback-box {
+    display: none;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-top: 0.8rem;
+  }
+
+  .feedback-box.correct { background: #d4f0dc; color: var(--forest); display: block; }
+  .feedback-box.wrong { background: #fde8e8; color: #c00; display: block; }
+
+  .next-btn {
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    display: none;
+    transition: transform 0.2s;
+    width: 100%;
+  }
+
+  .next-btn:hover { transform: translateY(-2px); }
+  .next-btn.visible { display: block; }
+
+  /* Results */
+  .quiz-results {
+    display: none;
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    border: 2px solid var(--mint);
+  }
+
+  .quiz-results.active { display: block; }
+
+  .result-score {
+    font-family: 'Baloo 2', cursive;
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--teal);
+    margin: 0.5rem 0;
+  }
+
+  .result-label { font-size: 1rem; color: #666; margin-bottom: 1rem; }
+
+  .result-message {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    border: 2px solid var(--mint);
+  }
+
+  .review-list { text-align: left; margin-bottom: 1.5rem; }
+
+  .review-item {
+    border-radius: 10px;
+    padding: 0.8rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.88rem;
+    border: 1px solid var(--mint);
+  }
+
+  .review-item.correct { background: #d4f0dc; border-color: var(--forest); }
+  .review-item.wrong { background: #fde8e8; border-color: #e55; }
+
+  .review-item .q-text { font-weight: 700; margin-bottom: 0.3rem; }
+  .review-item .a-text { color: #444; }
+
+  /* Scrollable sections */
+  .scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .scrollable::-webkit-scrollbar { width: 6px; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--mint); border-radius: 3px; }
+
+  /* Rubric table */
+  .rubric-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .rubric-table th {
+    background: linear-gradient(90deg, var(--teal), var(--sky));
+    color: white;
+    padding: 0.7rem 0.8rem;
+    text-align: center;
+    font-weight: 700;
+  }
+  .rubric-table td { padding: 0.6rem 0.8rem; border: 1px solid var(--mint); vertical-align: top; }
+  .rubric-table td:first-child { font-weight: 800; color: var(--teal); }
+  .rubric-table tr:nth-child(even) td { background: var(--card-bg); }
+
+  /* Shape cards */
+  .shape-cards { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .shape-card {
+    flex: 1;
+    min-width: 140px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    border: 2px solid var(--mint);
+  }
+  .shape-card .shape-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .shape-card h4 { font-weight: 800; color: var(--teal); font-size: 0.95rem; }
+  .shape-card p { font-size: 0.82rem; color: #555; margin-top: 0.3rem; }
+
+  h2.sub-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--teal);
+    margin: 1.2rem 0 0.6rem;
+  }
+
+  .reviewer-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.8rem 1.2rem;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.2s;
+  }
+  .reviewer-tab:hover { color: var(--teal); }
+  .reviewer-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+  .steps-list { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.8rem 0; }
+  .step-item { display: flex; align-items: flex-start; gap: 0.8rem; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--forest));
+    color: white; font-weight: 800; font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .proteins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  @media (max-width: 500px) { .proteins-grid { grid-template-columns: 1fr; } }
+
+  .protein-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    border-left: 4px solid var(--sky);
+  }
+  .protein-card h4 { font-weight: 800; color: var(--teal); font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .protein-card p { font-size: 0.85rem; color: #444; }
+
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-logo">Bio<span>Tech</span> Reviewer</div>
+
+  <div class="dropdown">
+    <button class="nav-btn" id="reviewerNavBtn">📖 Reviewer ▾</button>
+    <div class="dropdown-menu">
+      <button class="dropdown-item" onclick="showPage('reviewer'); setReviewerModule('mod1')">🔬 Introduction to Biotechnology (Module 1)</button>
+      <button class="dropdown-item" onclick="showPage('reviewer'); setReviewerModule('mod2')">🧪 Recombinant DNA Technology (Module 2)</button>
+      <button class="dropdown-item" onclick="showPage('reviewer'); setReviewerModule('mod3')">🦠 Microbial Biotechnology (Module 3)</button>
+    </div>
+  </div>
+
+  <button class="nav-btn" onclick="showPage('flashcards')">🃏 Flashcards</button>
+  <button class="nav-btn" onclick="showPage('quiz')">📝 Quiz</button>
+  <button class="nav-btn" onclick="showPage('home')" style="margin-left:auto;">🏠 Home</button>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="home" class="page active">
+  <div class="home-hero">
+    <h1>🧬 BioTech Reviewer</h1>
+    <p>Your interactive study companion for Biotechnology.<br>Review, practice flashcards, and test your knowledge!</p>
+  </div>
+  <div class="home-cards">
+    <div class="home-card" onclick="showPage('reviewer'); setReviewerModule('mod1')">
+      <div class="icon">🔬</div>
+      <h3>Module 1</h3>
+      <p>Introduction to Biotechnology</p>
+    </div>
+    <div class="home-card" onclick="showPage('reviewer'); setReviewerModule('mod2')">
+      <div class="icon">🧪</div>
+      <h3>Module 2</h3>
+      <p>Recombinant DNA Technology</p>
+    </div>
+    <div class="home-card" onclick="showPage('reviewer'); setReviewerModule('mod3')">
+      <div class="icon">🦠</div>
+      <h3>Module 3</h3>
+      <p>Microbial Biotechnology</p>
+    </div>
+    <div class="home-card" onclick="showPage('flashcards')">
+      <div class="icon">🃏</div>
+      <h3>Flashcards</h3>
+      <p>Study key terms across all 3 modules</p>
+    </div>
+    <div class="home-card" onclick="showPage('quiz')">
+      <div class="icon">📝</div>
+      <h3>Quiz</h3>
+      <p>Test your knowledge — 35 questions per module</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REVIEWER PAGE ===== -->
+<div id="reviewer" class="page">
+
+  <!-- Module Tabs -->
+  <div style="background:white;border-bottom:2px solid var(--mint);padding:0 2rem;display:flex;gap:0.5rem;position:sticky;top:60px;z-index:50;">
+    <button class="reviewer-tab active" id="tab-mod1" onclick="setReviewerModule('mod1')">🔬 Module 1</button>
+    <button class="reviewer-tab" id="tab-mod2" onclick="setReviewerModule('mod2')">🧪 Module 2</button>
+    <button class="reviewer-tab" id="tab-mod3" onclick="setReviewerModule('mod3')">🦠 Module 3</button>
+  </div>
+
+  <!-- ===== MODULE 1 CONTENT ===== -->
+  <div id="reviewer-mod1" class="reviewer-module">
+  <div class="module-header" style="background:linear-gradient(135deg,#1a5a8e,#1a7a3c);">
+    <div class="module-icon">🔬</div>
+    <div>
+      <h1>Introduction to Biotechnology</h1>
+      <p>Module 1 — The Biotechnology Century and Its Workforce</p>
+    </div>
+  </div>
+
+  <!-- Learning Outcomes -->
+  <div class="section-block">
+    <div class="section-header">🎯 Learning Outcomes</div>
+    <div class="content-card">
+      <ul class="objective-list">
+        <li><span class="num">1</span>Define biotechnology and understand the many scientific disciplines that contribute to it.</li>
+        <li><span class="num">2</span>Provide examples of historic and current applications of biotechnology and its products.</li>
+        <li><span class="num">3</span>List and describe different types of biotechnology and their applications.</li>
+        <li><span class="num">4</span>Provide examples of potential advances in biotechnology.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- What is Biotechnology -->
+  <div class="section-block">
+    <div class="section-header">🧬 What is Biotechnology?</div>
+    <div class="content-card">
+      <p style="font-size:1rem;font-weight:700;color:var(--teal);margin-bottom:0.8rem;">Biotechnology is the use of living organisms or their products to improve life and solve problems.</p>
+      <p style="margin-bottom:0.8rem;">This includes using parts of living things such as cells, enzymes, or genes to make useful products for people, animals, and the environment. It is an <strong>interdisciplinary science</strong> connecting biology, chemistry, genetics, and technology.</p>
+      <div class="info-grid">
+        <div class="info-box"><h4>📌 Key Characteristics</h4><ul><li>Uses living organisms to produce useful products</li><li>Connects biology, chemistry, genetics, and technology</li><li>Improves health, agriculture, and the environment</li></ul></div>
+        <div class="info-box"><h4>🌾 Everyday Examples</h4><ul><li>Genetically modified (GM) foods</li><li>Crops that resist pests or are more nutritious</li><li>Life-saving medicines and vaccines</li><li>Eco-friendly fuels</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="section-block">
+    <div class="section-header">📅 A Brief History of Biotechnology</div>
+    <div class="content-card">
+      <h2 class="sub-title">Ancient Biotechnology (2000 B.C. – 1900s)</h2>
+      <p style="margin-bottom:0.6rem;">Early civilizations (Chinese, Greeks, Romans, Babylonians, Egyptians) practiced: <strong>Domestication of animals</strong> (sheep, cows, goats), <strong>Fermentation</strong> (bread, wine, beer using <em>Saccharomyces cerevisiae</em>), and <strong>Selective breeding</strong> (larger fruits, higher-yield animals).</p>
+      <div class="comparison-table-wrap">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Year</th><th>Event</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1928</strong></td><td>Alexander Fleming discovers Penicillin — <em>Penicillium</em> mold stops bacteria → first antibiotic, saved millions of lives</td></tr>
+            <tr><td><strong>1940s–50s</strong></td><td>Large-scale "batch" production; mass cultivation of bacteria for antibiotics; start of commercial biotechnology</td></tr>
+            <tr><td><strong>1960s–70s</strong></td><td>Molecular biology revolution: DNA structure discovered; recombinant DNA technology developed; production of insulin & HGH</td></tr>
+            <tr><td><strong>1982</strong></td><td>Genentech introduces recombinant insulin (Humulin) — first biotechnology product approved for human use</td></tr>
+            <tr><td><strong>1990</strong></td><td>Human Genome Project begins; completed 2003 — mapped all human genes</td></tr>
+            <tr><td><strong>Post-2000</strong></td><td>1000 Genomes Project — compared human genes with other organisms to understand gene function</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Types of Biotechnology -->
+  <div class="section-block">
+    <div class="section-header">🌈 7 Types of Biotechnology</div>
+    <div class="content-card">
+      <div class="info-grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+        <div class="info-box"><h4>1️⃣ Microbial Biotechnology</h4><p style="font-size:0.85rem;">Uses bacteria, yeast, fungi. Applications: enzymes, vaccines, insulin, HGH, bioremediation, food safety detection.</p></div>
+        <div class="info-box"><h4>2️⃣ Agricultural Biotechnology</h4><p style="font-size:0.85rem;">Pest-resistant crops, nutrient-enriched foods, molecular pharming (e.g., tobacco for medicines), biofuels. Global food production must increase ~70% by 2050.</p></div>
+        <div class="info-box"><h4>3️⃣ Animal Biotechnology</h4><p style="font-size:0.85rem;">Transgenic animals for protein production. <strong>1997</strong>: Dolly the sheep cloned via nucleus transfer — first mammal cloned this way.</p></div>
+        <div class="info-box"><h4>4️⃣ Forensic Biotechnology</h4><p style="font-size:0.85rem;">DNA fingerprinting: identify individuals, solve crimes, prove innocence, confirm paternity, trace disease outbreaks, protect endangered species.</p></div>
+        <div class="info-box"><h4>5️⃣ Bioremediation</h4><p style="font-size:0.85rem;">Uses bacteria, fungi, plants to clean polluted environments. Examples: 1989 Exxon Valdez oil spill; 2010 Deepwater Horizon — microbial enzymes degraded oil.</p></div>
+        <div class="info-box"><h4>6️⃣ Aquatic Biotechnology</h4><p style="font-size:0.85rem;">Aquaculture provides nearly half of world's seafood. Transgenic salmon grow faster. Bioprospecting marine organisms for novel medicines and enzymes.</p></div>
+        <div class="info-box"><h4>7️⃣ Medical Biotechnology</h4><p style="font-size:0.85rem;">Cancer research, genetic disorder diagnosis, gene therapy, stem cell technology (regenerative medicine), personalized medicine via Human Genome Project.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="section-block">
+    <div class="section-header">💊 Products of Modern Biotechnology</div>
+    <div class="content-card">
+      <p style="margin-bottom:0.8rem;">Over <strong>65% of US biotech companies</strong> focus on creating drugs. There are 300+ medicines in development targeting 200+ diseases. <strong>1982</strong>: Genentech introduced recombinant insulin — first biotech product approved for human use.</p>
+      <h2 class="sub-title">Recombinant Proteins — Production Process</h2>
+      <p style="margin-bottom:0.6rem;">Insert human genes into bacterial/mammalian cells → grow in <strong>cell culture</strong> with nutrients → use <strong>fermenters/bioreactors</strong> for mass cultivation → harvest and purify proteins.</p>
+      <div class="comparison-table-wrap">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Product</th><th>Application</th></tr></thead>
+          <tbody>
+            <tr><td>Blood factor VIII (clotting factor)</td><td>Treat hemophilia</td></tr>
+            <tr><td>Growth hormone</td><td>Correct pituitary deficiencies; increase cow milk production</td></tr>
+            <tr><td>Insulin</td><td>Treat diabetes</td></tr>
+            <tr><td>Erythropoietin</td><td>Treat cancer and viral infections</td></tr>
+            <tr><td>Monoclonal antibodies</td><td>Research and treatment of flu, arthritis, cancer</td></tr>
+            <tr><td>Tissue plasminogen activator (tPA)</td><td>Treat heart attacks and stroke</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h2 class="sub-title">Groundbreaking Innovations</h2>
+      <div class="proteins-grid">
+        <div class="protein-card"><h4>🧬 Gene Therapy</h4><p>Introduces new genes into human cells to treat or cure genetic diseases.</p></div>
+        <div class="protein-card"><h4>🫀 Tissue Engineering</h4><p>Growing replacement organs for transplantation; bioengineered organs have lower rejection risk.</p></div>
+        <div class="protein-card"><h4>🌊 Marine Biotechnology</h4><p>Compounds from marine organisms; treatments for cancers, strokes, arthritis.</p></div>
+        <div class="protein-card"><h4>🐐 Transgenic Animals</h4><p>E.g., ATryn protein from genetically modified goats for large-scale medicine production.</p></div>
+        <div class="protein-card"><h4>👤 Personalized Medicine</h4><p>Based on Human Genome Project discoveries; more personalized and effective treatments.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ethics & Regulation -->
+  <div class="section-block">
+    <div class="section-header">⚖️ Ethics & Regulation</div>
+    <div class="content-card">
+      <div class="info-grid">
+        <div class="info-box"><h4>🔍 Major Ethical Issues</h4><ul><li>How far should humans go in altering life?</li><li>Cloning (Dolly — sheep, cows, monkeys; human cloning proposals)</li><li>Synthetic genomes and proteins</li><li>GMO foods: benefits vs. risks</li><li>Identity, individuality, and value of human life</li></ul></div>
+        <div class="info-box"><h4>🏛️ US Regulatory Agencies</h4><ul><li><strong>FDA</strong> — oversees biotech products; ensures safety; approves for public use</li><li><strong>Dept. of Agriculture</strong> — regulates agricultural biotech; food safety; crop monitoring</li><li><strong>EPA</strong> — environmental impact; pollution control; safety monitoring</li></ul></div>
+        <div class="info-box"><h4>✅ Quality Systems</h4><ul><li><strong>QA (Quality Assurance)</strong> — all activities ensuring product safety and performance standards</li><li><strong>QC (Quality Control)</strong> — laboratory testing during production for consistent quality</li><li>Also: Patent laws, clinical trials, product evaluation before market release</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 21st Century Challenges -->
+  <div class="section-block">
+    <div class="section-header">🔭 Biological Challenges of the 21st Century</div>
+    <div class="content-card">
+      <p style="margin-bottom:0.8rem;">The <strong>Human Genome Project (1990–2003)</strong> revealed humans have fewer genes than expected and provided a complete picture of the human genetic code, enabling personalized medicine and gene-protein interaction research.</p>
+      <div class="proteins-grid">
+        <div class="protein-card"><h4>💊 Pharmacogenomics</h4><p>Using patient's genetic profile for treatment design. SNPs (Single Nucleotide Polymorphisms) explain why drugs work differently. Simple DNA test could select best medication with fewer side effects.</p></div>
+        <div class="protein-card"><h4>🧬 Gene Therapy</h4><p>Replace or repair defective genes. Challenges in safe delivery to human cells. Successful trials in blood diseases; promising for nervous system diseases.</p></div>
+        <div class="protein-card"><h4>🔬 Nanotechnology in Medicine</h4><p>Microscopic drug delivery tools (nanovesicles). Deliver drugs directly to diseased cells. Reduced damage to healthy tissues.</p></div>
+        <div class="protein-card"><h4>🫀 Stem Cell Technology</h4><p>Can develop into skin, nerve, or muscle cells. Treats paralysis, heart disease, diabetes. Induced Pluripotent Stem Cells (iPSCs) created without destroying embryos.</p></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end reviewer-mod1 -->
+
+  <!-- ===== MODULE 2 CONTENT ===== -->
+  <div id="reviewer-mod2" class="reviewer-module" style="display:none;">
+  <div class="module-header" style="background:linear-gradient(135deg,#6a1a8e,#1a7a3c);">
+    <div class="module-icon">🧪</div>
+    <div>
+      <h1>Recombinant DNA Technology</h1>
+      <p>Module 2 — Molecular Biology &amp; Biotechnology</p>
+    </div>
+  </div>
+
+  <!-- Learning Outcomes -->
+  <div class="section-block">
+    <div class="section-header">🎯 Learning Outcomes</div>
+    <div class="content-card">
+      <ul class="objective-list">
+        <li><span class="num">1</span>Define recombinant DNA technology and explain how it is used to clone genes and manipulate DNA.</li>
+        <li><span class="num">2</span>Compare and contrast different types of cloning vectors; describe their practical features and applications.</li>
+        <li><span class="num">3</span>Discuss how DNA libraries are created and screened to identify cloned genes of interest.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Key Terms -->
+  <div class="section-block">
+    <div class="section-header">📚 Key Terms</div>
+    <div class="content-card">
+      <div class="proteins-grid">
+        <div class="protein-card"><h4>Recombinant DNA Technology</h4><p>Combining DNA molecules from different sources to form new genetic combinations. Synonymous with gene cloning and genetic engineering.</p></div>
+        <div class="protein-card"><h4>Gene Cloning</h4><p>Making identical copies of a particular gene for scientific or medical use.</p></div>
+        <div class="protein-card"><h4>Genetic Engineering</h4><p>Altering the genetic makeup of an organism using molecular tools.</p></div>
+        <div class="protein-card"><h4>Clone</h4><p>From Greek "twig." In biology: a molecule, cell, or organism that is an exact copy of another.</p></div>
+        <div class="protein-card"><h4>DNA Ligase</h4><p>Enzyme that joins DNA fragments by sealing breaks in the backbone. Originally joins Okazaki fragments during replication.</p></div>
+        <div class="protein-card"><h4>Bacteriophage (Phage)</h4><p>Virus that infects bacteria. Key model organism in early molecular biology research.</p></div>
+        <div class="protein-card"><h4>Insert DNA</h4><p>The foreign DNA fragment introduced into a vector for cloning.</p></div>
+        <div class="protein-card"><h4>Restriction Site</h4><p>Specific palindromic DNA sequence recognized and cut by a restriction enzyme.</p></div>
+        <div class="protein-card"><h4>Palindrome</h4><p>Sequence that reads the same on complementary strands in the 5'→3' direction. E.g., 5'-GAATTC-3'.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historical Timeline -->
+  <div class="section-block">
+    <div class="section-header">📅 Historical Timeline</div>
+    <div class="content-card">
+      <div class="comparison-table-wrap">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Year</th><th>Event</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1953</strong></td><td>Watson &amp; Crick — DNA double helix identified. Reveals how genetic info is stored and inherited.</td></tr>
+            <tr><td><strong>Late 1960s</strong></td><td>Werner Arber proposes restriction enzymes as bacterial defense against bacteriophages.</td></tr>
+            <tr><td><strong>~1970</strong></td><td>Hamilton Smith isolates HindIII from <em>H. influenzae</em>; shows enzymes cut at specific palindromic sequences.</td></tr>
+            <tr><td><strong>1972</strong></td><td>Paul Berg creates the FIRST recombinant DNA molecule (<em>E. coli</em> + SV40 viral DNA) using EcoRI + DNA ligase.</td></tr>
+            <tr><td><strong>1973</strong></td><td>Cohen &amp; Boyer create pSC101 (first plasmid vector); clone <em>Xenopus</em> frog DNA into bacteria — birth of modern biotechnology.</td></tr>
+            <tr><td><strong>1977</strong></td><td>Genentech scientists clone the human insulin gene.</td></tr>
+            <tr><td><strong>1978</strong></td><td>Nobel Prize in Medicine: Arber, Smith &amp; Nathans — restriction enzymes.</td></tr>
+            <tr><td><strong>1980</strong></td><td>Nobel Prize in Chemistry: Paul Berg — recombinant DNA.</td></tr>
+            <tr><td><strong>1982</strong></td><td>Humulin (recombinant human insulin) = first FDA-approved genetically engineered product.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restriction Enzymes -->
+  <div class="section-block">
+    <div class="section-header">✂️ Restriction Enzymes — "Molecular Scissors"</div>
+    <div class="content-card">
+      <p style="margin-bottom:0.8rem;">Restriction enzymes are bacterial proteins that cut DNA at specific <strong>restriction sites</strong>. They are the molecular scissors of recombinant DNA technology.</p>
+      <div class="info-grid">
+        <div class="info-box"><h4>Key Properties</h4><ul><li>Defense mechanism: protect bacteria from bacteriophages by cutting foreign DNA</li><li>Recognize palindromic sequences (4, 6, or 8 bp long) — NOT random</li><li>Named after source bacterium: EcoRI = <em>E. coli</em> R, enzyme I</li></ul></div>
+        <div class="info-box"><h4>Types of Ends Produced</h4><ul><li><strong>Sticky Ends (Cohesive)</strong>: single-stranded overhangs; produced by EcoRI, BamHI, HindIII, TaqI; PREFERRED for gene cloning</li><li><strong>Blunt Ends</strong>: both strands cut at exact same position; produced by AluI, HaeIII, SmaI; less efficient but more versatile</li></ul></div>
+      </div>
+      <div class="comparison-table-wrap" style="margin-top:1rem;">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Source Organism</th><th>Enzyme</th><th>End Type</th><th>Recognition Site</th></tr></thead>
+          <tbody>
+            <tr><td><em>Haemophilus influenzae</em></td><td><strong>HindIII</strong></td><td>Cohesive</td><td>A↓AGCTT</td></tr>
+            <tr><td><em>Escherichia coli</em></td><td><strong>EcoRI</strong></td><td>Cohesive</td><td>G↓AATTC</td></tr>
+            <tr><td><em>Bacillus amyloliquefaciens</em></td><td><strong>BamHI</strong></td><td>Cohesive</td><td>G↓GATCC</td></tr>
+            <tr><td><em>Thermus aquaticus</em></td><td><strong>TaqI</strong></td><td>Cohesive</td><td>T↓CGA</td></tr>
+            <tr><td><em>Arthrobacter luteus</em></td><td><strong>AluI</strong></td><td>Blunt</td><td>AG↓CT</td></tr>
+            <tr><td><em>Haemophilus aegypticus</em></td><td><strong>HaeIII</strong></td><td>Blunt</td><td>GG↓CC</td></tr>
+            <tr><td><em>Serratia marcescens</em></td><td><strong>SmaI</strong></td><td>Blunt</td><td>CCC↓GGG</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gene Cloning Process -->
+  <div class="section-block">
+    <div class="section-header">🔄 The Gene Cloning Process</div>
+    <div class="content-card">
+      <div class="steps-list">
+        <div class="step-item"><span class="step-num">1</span><div><strong>ISOLATE</strong> — Isolate plasmid (vector) DNA from bacteria AND the target gene from source organism's DNA.</div></div>
+        <div class="step-item"><span class="step-num">2</span><div><strong>CUT</strong> — Cut both DNAs with the SAME restriction enzyme (e.g., EcoRI), producing compatible cohesive ends.</div></div>
+        <div class="step-item"><span class="step-num">3</span><div><strong>MIX &amp; LIGATE</strong> — Mix the cut DNAs. Complementary sticky ends join by hydrogen bonding. Add DNA ligase to covalently seal → recombinant plasmid.</div></div>
+        <div class="step-item"><span class="step-num">4</span><div><strong>TRANSFORM</strong> — Introduce recombinant plasmids into competent <em>E. coli</em> via heat shock (CaCl₂) or electroporation.</div></div>
+        <div class="step-item"><span class="step-num">5</span><div><strong>SELECT</strong> — Plate on ampicillin + X-gal agar. Use blue-white selection to identify white (recombinant) colonies.</div></div>
+        <div class="step-item"><span class="step-num">6</span><div><strong>AMPLIFY</strong> — Grow selected white colonies; isolate and purify recombinant plasmid DNA for downstream use.</div></div>
+      </div>
+      <h2 class="sub-title">🔵 Blue-White Selection: "Blue = Boring, White = Winner"</h2>
+      <div class="info-grid">
+        <div class="info-box" style="border-color:#aad4f5;"><h4>🔵 BLUE Colonies = NOT Desired</h4><ul><li>Plasmid closed WITHOUT insert</li><li>lacZ gene INTACT → produces β-galactosidase</li><li>β-gal breaks down X-gal → turns BLUE</li></ul></div>
+        <div class="info-box" style="border-color:#a0d8a0;"><h4>⬜ WHITE Colonies = DESIRED ✓</h4><ul><li>Insert DNA disrupts lacZ site</li><li>lacZ gene DISRUPTED → NO β-galactosidase</li><li>X-gal NOT broken down → stays WHITE</li></ul></div>
+      </div>
+      <p style="font-size:0.85rem;color:#555;margin-top:0.8rem;font-style:italic;">Note: Ampicillin selection first confirms cells took up SOME plasmid. Blue-white selection identifies which is recombinant. Both are used together.</p>
+    </div>
+  </div>
+
+  <!-- Cloning Vectors -->
+  <div class="section-block">
+    <div class="section-header">🚀 Cloning Vectors</div>
+    <div class="content-card">
+      <h2 class="sub-title">Properties of a Good Vector</h2>
+      <div class="proteins-grid">
+        <div class="protein-card"><h4>Small Size (~2–20 kb)</h4><p>Easy separation from chromosomal DNA and easy manipulation.</p></div>
+        <div class="protein-card"><h4>Origin of Replication (ori)</h4><p>Site where replication begins. High-copy plasmids: hundreds to thousands of copies per cell.</p></div>
+        <div class="protein-card"><h4>Multiple Cloning Site (MCS)</h4><p>Short region with restriction sites for many enzymes; flexible DNA insertion.</p></div>
+        <div class="protein-card"><h4>Selectable Marker Genes</h4><p>Ampicillin (ampR), tetracycline (tetR), lacZ gene — identify transformed cells and recombinant clones.</p></div>
+        <div class="protein-card"><h4>RNA Polymerase Promoter</h4><p>Allow transcription of cloned genes in vivo (cell) or in vitro (lab). Essential for protein expression.</p></div>
+        <div class="protein-card"><h4>DNA Sequencing Primer Sites</h4><p>5' and 3' primer sites flanking MCS for easy sequencing of inserted fragments.</p></div>
+      </div>
+      <h2 class="sub-title">Mnemonic: "Please Bring Cookies Before Yankees"</h2>
+      <div class="comparison-table-wrap">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Vector</th><th>Max Insert</th><th>Key Applications</th><th>Main Limitations</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Bacterial Plasmid</strong> (pSC101, pBR322)</td><td>~6–12 kb</td><td>DNA cloning, protein expression, direct sequencing. Most widely used.</td><td>Small insert size; limited eukaryotic protein expression.</td></tr>
+            <tr><td><strong>Bacteriophage Lambda</strong></td><td>~25 kb</td><td>cDNA &amp; genomic libraries. Important in early molecular biology.</td><td>Packaging limits insert size; host replication problems.</td></tr>
+            <tr><td><strong>Cosmid</strong></td><td>~35 kb</td><td>Genomic libraries; cloning large DNA fragments.</td><td>Not ideal for protein expression; cannot replicate in mammalian cells.</td></tr>
+            <tr><td><strong>BAC</strong> (Bacterial Artificial Chromosome)</td><td>~300 kb</td><td>Large genomic fragments; key in Human Genome Project.</td><td>Replication restricted to bacteria; cannot express proteins.</td></tr>
+            <tr><td><strong>YAC</strong> (Yeast Artificial Chromosome)</td><td>200–2,000 kb</td><td>Very large genomic fragments; Human Genome Project chromosome mapping.</td><td>Must grow in yeast; cannot use in bacteria.</td></tr>
+            <tr><td><strong>Ti Vector</strong> (Tumor-Inducing)</td><td>Varies</td><td>Gene transfer into plants; GM crop development.</td><td>Plant cells only; large size; random restriction sites.</td></tr>
+            <tr><td><strong>Expression Vector</strong></td><td>Variable</td><td>High-level protein production (insulin, growth hormone) in bacteria or mammalian cells.</td><td>Eukaryotic proteins may not fold correctly in bacteria.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DNA Libraries -->
+  <div class="section-block">
+    <div class="section-header">📖 DNA Libraries</div>
+    <div class="content-card">
+      <p style="margin-bottom:0.8rem;"><strong>Shotgun cloning</strong>: random cutting and inserting DNA — thousands of random combinations, hard to find a specific gene. DNA libraries solved this problem.</p>
+      <p style="margin-bottom:1rem;">A <strong>DNA library</strong> is a collection of cloned DNA fragments from an organism, stored in bacteria or viruses. Preserved long-term; searched repeatedly to find specific genes.</p>
+      <div class="comparison-table-wrap">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Feature</th><th>Genomic Library</th><th>cDNA Library</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Source material</strong></td><td>Total chromosomal (genomic) DNA</td><td>Messenger RNA (mRNA) from target cells/tissue</td></tr>
+            <tr><td><strong>Contains</strong></td><td>ALL DNA: exons + introns + intergenic regions</td><td>Only EXPRESSED genes; no introns; no non-coding DNA</td></tr>
+            <tr><td><strong>Key enzyme</strong></td><td>Restriction enzymes</td><td>Reverse transcriptase (RT) + DNA polymerase</td></tr>
+            <tr><td><strong>Vectors used</strong></td><td>Plasmids, BACs, YACs</td><td>Plasmids primarily</td></tr>
+            <tr><td><strong>Best for</strong></td><td>Genome structure, regulatory regions</td><td>Protein production in bacteria; studying active genes</td></tr>
+            <tr><td><strong>Includes introns?</strong></td><td>YES</td><td>NO — introns already spliced from mRNA</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h2 class="sub-title">How to Create a cDNA Library</h2>
+      <div class="steps-list">
+        <div class="step-item"><span class="step-num">1</span><div>Extract mRNA from target tissue (e.g., pancreatic beta cells for insulin gene).</div></div>
+        <div class="step-item"><span class="step-num">2</span><div>Anneal a short oligo-dT primer to the poly-A tail of each mRNA molecule.</div></div>
+        <div class="step-item"><span class="step-num">3</span><div>Use <strong>reverse transcriptase (RT)</strong> to synthesize single-stranded cDNA from the mRNA template.</div></div>
+        <div class="step-item"><span class="step-num">4</span><div>Digest the mRNA strand with NaOH or RNase to remove the RNA template.</div></div>
+        <div class="step-item"><span class="step-num">5</span><div>Synthesize the second cDNA strand using DNA polymerase and random short primers.</div></div>
+        <div class="step-item"><span class="step-num">6</span><div>Add linkers (short synthetic DNA sequences with restriction sites) to both ends of the cDNA.</div></div>
+        <div class="step-item"><span class="step-num">7</span><div>Digest cDNA + plasmid vector with same restriction enzyme; ligate together using DNA ligase.</div></div>
+        <div class="step-item"><span class="step-num">8</span><div>Transform recombinant plasmids into bacteria. Each colony = one cDNA clone = one expressed gene.</div></div>
+      </div>
+      <h2 class="sub-title">Library Screening: Colony Hybridization</h2>
+      <p style="margin-bottom:0.6rem;">A <strong>DNA probe</strong> is a short, single-stranded DNA sequence complementary to the target gene. Labeled with radioactive isotopes or fluorescent dyes.</p>
+      <div class="steps-list">
+        <div class="step-item"><span class="step-num">1</span><div>Grow recombinant bacterial colonies on agar.</div></div>
+        <div class="step-item"><span class="step-num">2</span><div>Press nylon/nitrocellulose membrane onto plate to transfer colony imprints.</div></div>
+        <div class="step-item"><span class="step-num">3</span><div>Lyse cells with alkaline solution and denature DNA into single strands.</div></div>
+        <div class="step-item"><span class="step-num">4</span><div>Bake or UV-expose membrane to permanently fix single-stranded DNA.</div></div>
+        <div class="step-item"><span class="step-num">5</span><div>Add labeled DNA probe complementary to the target gene.</div></div>
+        <div class="step-item"><span class="step-num">6</span><div>Probe hybridizes (base-pairs) with matching sequences on the membrane.</div></div>
+        <div class="step-item"><span class="step-num">7</span><div>Wash off unbound probe. Detect via autoradiography or fluorescent imaging.</div></div>
+        <div class="step-item"><span class="step-num">8</span><div>Match glowing/dark spots to master plate. Culture positive colonies.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Scientists -->
+  <div class="section-block">
+    <div class="section-header">🏆 Key Scientists &amp; Contributions</div>
+    <div class="content-card">
+      <div class="comparison-table-wrap">
+        <table class="comparison-table" style="width:100%;">
+          <thead><tr><th>Scientist(s)</th><th>Key Contribution</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Watson &amp; Crick</strong></td><td>DNA double helix structure (1953). Foundation of all molecular biology.</td></tr>
+            <tr><td><strong>Werner Arber</strong></td><td>Proposed restriction enzymes as phage defense. Nobel Prize 1978.</td></tr>
+            <tr><td><strong>Hamilton Smith</strong></td><td>Isolated HindIII; proved enzymes cut at specific sites. Nobel 1978.</td></tr>
+            <tr><td><strong>Daniel Nathans</strong></td><td>Applied restriction enzymes to map viral DNA. Nobel 1978.</td></tr>
+            <tr><td><strong>Paul Berg</strong></td><td>Created FIRST recombinant DNA molecule (E. coli + SV40). Nobel 1980.</td></tr>
+            <tr><td><strong>Stanley Cohen</strong></td><td>Developed transformation; created pSC101 (first plasmid vector); co-founder of molecular cloning.</td></tr>
+            <tr><td><strong>Herbert Boyer</strong></td><td>Co-created first recombinant clone with Cohen; co-founded Genentech.</td></tr>
+            <tr><td><strong>Robert Swanson</strong></td><td>Co-founded Genentech with Boyer; commercialized recombinant insulin (Humulin).</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h2 class="sub-title">Mnemonic: The 3 Tools — "SRL"</h2>
+      <div class="info-grid">
+        <div class="info-box"><h4>✂️ S = Scissors</h4><p>Restriction enzymes — cut DNA at specific sites</p></div>
+        <div class="info-box"><h4>🚌 R = Route</h4><p>Plasmid/Vector — carries DNA into host cell</p></div>
+        <div class="info-box"><h4>🔗 L = Ligase</h4><p>DNA Ligase — joins the DNA pieces covalently</p></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end reviewer-mod2 -->
+
+  <!-- ===== MODULE 3 CONTENT ===== -->
+  <div id="reviewer-mod3" class="reviewer-module" style="display:none;">
+
+  <!-- EXPECTED LEARNING OUTCOMES -->
+  <div class="section-block">
+    <div class="section-header">🎯 Expected Learning Outcomes</div>
+    <div class="content-card">
+      <ul class="objective-list">
+        <li><span class="num">1</span>Describe features of bacteria that make them useful for applications in biotechnology.</li>
+        <li><span class="num">2</span>Provide examples of how yeasts are used in biotechnology.</li>
+        <li><span class="num">3</span>List examples of medically important proteins that are produced in bacteria using recombinant DNA technology.</li>
+        <li><span class="num">4</span>Explain how alcohol and lactic acid fermentation processes can be used to produce common foods and beverages.</li>
+        <li><span class="num">5</span>Describe the role microorganisms play in the development and production of vaccines; provide examples of different vaccines.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STRUCTURE OF MICROBES -->
+  <div class="section-block">
+    <div class="section-header">🔬 Structure of Microbes</div>
+    <div class="content-card">
+      <div class="info-grid">
+        <div class="info-box">
+          <h4>🧫 Eukaryotic</h4>
+          <ul>
+            <li>True nucleus</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>🦠 Prokaryotic</h4>
+          <ul>
+            <li>Lacks a true nucleus</li>
+            <li>Two major domains: <strong>Bacteria</strong> and <strong>Archea</strong></li>
+            <li>Halophiles and thermophiles</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Difference Between Nucleus &amp; Nucleoid</h2>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Nucleus</th>
+              <th>Nucleoid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Shape</strong></td>
+              <td>Spherical or oval shaped</td>
+              <td>Irregularly shaped in prokaryotes</td>
+            </tr>
+            <tr>
+              <td><strong>Membrane</strong></td>
+              <td>Double membrane bound</td>
+              <td>Lacks a membrane</td>
+            </tr>
+            <tr>
+              <td><strong>Contents</strong></td>
+              <td>Contains DNA, RNA, histones etc.</td>
+              <td>Contains mainly DNA</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY STRUCTURAL FEATURES OF BACTERIA -->
+  <div class="section-block">
+    <div class="section-header">🔩 Key Structural Features of Bacteria</div>
+    <div class="content-card">
+      <div class="info-box" style="margin-bottom:1rem;">
+        <h4>Structural Features</h4>
+        <ul>
+          <li>DNA is single circular chromosome</li>
+          <li>Plasmid</li>
+          <li>No membrane-bound organelles</li>
+          <li>Cell wall is made of peptidoglycan</li>
+          <li>Some have capsule</li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">Gram Stain Technique</h2>
+      <div class="info-grid">
+        <div class="info-box">
+          <h4>🟣 Gram-Positive</h4>
+          <ul>
+            <li>Stains purple</li>
+            <li>Thick cell walls</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>🩷 Gram-Negative</h4>
+          <ul>
+            <li>Stains pink</li>
+            <li>Thin cell walls</li>
+            <li>Has outer membrane &amp; periplasm</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Bacterial Shapes and Arrangements</h2>
+      <div class="shape-cards">
+        <div class="shape-card">
+          <div class="shape-icon">🟢</div>
+          <h4>Cocci</h4>
+          <p>Spherical-shaped bacteria</p>
+        </div>
+        <div class="shape-card">
+          <div class="shape-icon">🟣</div>
+          <h4>Bacilli</h4>
+          <p>Rod-shaped bacteria</p>
+        </div>
+        <div class="shape-card">
+          <div class="shape-icon">🌀</div>
+          <h4>Spirilla</h4>
+          <p>Spiral-shaped bacteria</p>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Genetic Material and Plasmid</h2>
+      <div class="highlight">
+        <ul style="list-style:none;">
+          <li style="padding:0.3rem 0; border-bottom:1px solid var(--mint);">• 2 to 4 million base pairs</li>
+          <li style="padding:0.3rem 0;">• Contain plasmids</li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">Growth and Reproduction of Bacteria</h2>
+      <div class="def-card">
+        <div class="term">Binary Fission</div>
+        <div class="definition">Bacteria reproduce asexually through binary fission — the cell grows, duplicates its DNA, and splits into two identical daughter cells.</div>
+      </div>
+
+      <h2 class="sub-title">Bacteria as Model Organisms</h2>
+      <div class="info-box">
+        <h4>Why Bacteria are Ideal</h4>
+        <ul>
+          <li>Grow quickly</li>
+          <li>Easy to culture</li>
+          <li>Genetically manipulated</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- YEASTS -->
+  <div class="section-block">
+    <div class="section-header">🍺 Yeasts Are Important Microbes</div>
+    <div class="content-card">
+      <div class="info-box" style="margin-bottom:1rem;">
+        <h4>Uses of Yeast</h4>
+        <ul>
+          <li>Brewing beer</li>
+          <li>Recombinant human antibodies</li>
+          <li>Biotechnological products</li>
+          <li>Model organism</li>
+          <li>Yeast artificial chromosomes</li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">Structure and Characteristics of Yeast</h2>
+      <div class="info-grid">
+        <div class="info-box">
+          <h4>Physical Traits</h4>
+          <ul>
+            <li>Vary in size and shape: spherical, elliptical, or cylindrical</li>
+            <li>Can grow aerobic and anaerobic</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>Saccharomyces cerevisiae</h4>
+          <ul>
+            <li>First eukaryotic organism to have its entire genome sequenced</li>
+            <li>Gene expression closely resembles that in human cells</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Industrial and Biotechnology Uses of Yeast</h2>
+      <div class="def-card">
+        <div class="term">Pichia pastoris</div>
+        <div class="definition">
+          <ul style="list-style:none;">
+            <li style="padding:0.25rem 0;">• Grows to high cell densities in liquid culture</li>
+            <li style="padding:0.25rem 0;">• Possesses strong promoters</li>
+            <li style="padding:0.25rem 0;">• Batch processing and large-scale production of proteins and enzymes</li>
+            <li style="padding:0.25rem 0;">• Used in the production of vaccines, enzymes, and recombinant proteins</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MICROBIAL ENZYMES -->
+  <div class="section-block">
+    <div class="section-header">⚗️ Microbial Enzymes</div>
+    <div class="content-card">
+      <div class="highlight">
+        <p><strong>Microbial enzymes</strong> speed up reactions. Uses include food, molecular biology, and detergents.</p>
+        <p style="margin-top:0.5rem;"><em>E. coli</em> produces: Restriction enzyme and DNA polymerase</p>
+        <p style="margin-top:0.5rem;"><strong>Techniques:</strong> DNA labeling, gene cloning, and polymerase chain reaction (PCR)</p>
+        <p style="margin-top:0.5rem;"><strong>Examples:</strong> Taq polymerase (<em>Thermus aquaticus</em>) and Pfu DNA polymerase (<em>Pyrococcus furiosus</em>)</p>
+        <p style="margin-top:0.5rem;"><strong>Bioprospecting</strong> — species survived up to 121°C</p>
+      </div>
+
+      <h2 class="sub-title">Other Important Enzymes</h2>
+      <div class="def-card">
+        <div class="term">1. Cellulase</div>
+        <div class="definition">
+          <ul style="list-style:none;">
+            <li>• Source: <em>E. coli</em>, <em>Trichoderma reesei</em> and <em>Aspergillus niger</em></li>
+            <li>• Breaks down cellulose</li>
+            <li>• Creates digestible animal feed</li>
+            <li>• Softens fabrics in textile</li>
+          </ul>
+        </div>
+      </div>
+      <div class="def-card">
+        <div class="term">2. Subtilisin</div>
+        <div class="definition">
+          <ul style="list-style:none;">
+            <li>• Source: <em>Bacillus subtilis</em></li>
+            <li>• Removes stains in laundry detergents</li>
+          </ul>
+        </div>
+      </div>
+      <div class="def-card">
+        <div class="term">3. Amylases</div>
+        <div class="definition">
+          <ul style="list-style:none;">
+            <li>• Break down starches</li>
+            <li>• Used in corn syrup production</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACTERIAL TRANSFORMATION -->
+  <div class="section-block">
+    <div class="section-header">🔄 Bacterial Transformation</div>
+    <div class="content-card">
+      <div class="def-card">
+        <div class="term">Bacterial Transformation</div>
+        <div class="definition">Bacterial transformation is the process by which bacteria take in DNA from their surrounding environment.</div>
+      </div>
+
+      <h2 class="sub-title">Making Bacterial Cells Competent</h2>
+      <div class="highlight">Treating bacteria with an ice-cold solution of calcium chloride</div>
+
+      <h2 class="sub-title">Transformation Process</h2>
+      <div class="process-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Mix recombinant plasmid DNA with chilled competent cells.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Place on ice → DNA attaches to cell surface.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Apply heat shock (37°C–42°C, ~1 min) → DNA enters cell.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Allow cells to recover in nutrient broth → express new genes.</div>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Antibiotic Selection and Recombinant Expression</h2>
+      <div class="highlight">
+        <p>Only cells that have successfully taken up the plasmid DNA with the resistance gene will survive and form colonies. This process is called <strong>antibiotic selection</strong>.</p>
+        <p style="margin-top:0.5rem;">The process is called <strong>transformation</strong> because the bacterial cells are genetically altered to gain new properties.</p>
+        <p style="margin-top:0.5rem;"><em>E. coli</em> transformed with the green fluorescent protein.</p>
+      </div>
+
+      <h2 class="sub-title">Electroporation</h2>
+      <div class="def-card">
+        <div class="term">Electroporation</div>
+        <div class="definition">Electroporation is another method for introducing DNA into bacterial cells. In this technique, an instrument known as an electroporator delivers a brief electrical pulse to a mixture of bacterial cells and DNA.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MICROBES FOR EVERYDAY APPLICATION -->
+  <div class="section-block">
+    <div class="section-header">🍞 Using Microbes for Everyday Application</div>
+    <div class="content-card">
+      <div class="highlight">
+        Microbial biotechnology uses natural or genetically engineered microorganisms to produce essential products. These microbes play a vital role in food production and in manufacturing medically important recombinant proteins that improve human health.
+      </div>
+      <div class="highlight" style="margin-top:0.8rem;">
+        Microorganisms are used in the production of foods such as <strong>bread, yogurt, cheese, beer, and wine.</strong>
+      </div>
+
+      <h2 class="sub-title">Cheese Production</h2>
+      <div class="highlight highlight-green">
+        <strong>Cheese production</strong> relies on the enzyme <strong>rennin</strong>, also called <strong>chymosin</strong>, which coagulates milk; the rennin gene was cloned and expressed in <em>Aspergillus niger</em>, becoming the first genetically engineered food ingredient approved by the FDA in 1990.
+      </div>
+
+      <h2 class="sub-title">Lactic Acid Bacteria</h2>
+      <div class="highlight highlight-green">
+        <strong>Lactic acid bacteria</strong> such as <em>Lactococcus lactis</em> and <em>Lactobacillus acidophilus</em> ferment milk by converting lactose into lactic acid, giving cheese and yogurt their flavor and texture.
+      </div>
+
+      <h2 class="sub-title">Fermenting Microbes</h2>
+      <div class="def-card">
+        <div class="term">Fermentation</div>
+        <div class="definition">Fermentation is a key microbial process in which microbes convert sugars into useful products such as lactic acid, ethanol, and carbon dioxide.</div>
+      </div>
+      <div class="info-grid">
+        <div class="info-box">
+          <h4>🍺 Alcohol Fermentation</h4>
+          <ul>
+            <li><em>Saccharomyces cerevisiae</em> — brewing beer, making wine, and baking bread</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>🥛 Lactic Acid Fermentation</h4>
+          <ul>
+            <li><em>Lactobacillus bulgaricus</em> and <em>Streptococcus thermophilus</em></li>
+            <li><em>Streptococcus thermophilus</em> and <em>Lactobacillus bulgaricus</em> produce yogurt and sour cream</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMBINANT INSULIN -->
+  <div class="section-block">
+    <div class="section-header">💉 Production of Recombinant Insulin in Bacteria</div>
+    <div class="content-card">
+      <div class="highlight">
+        <strong>Insulin</strong> is a hormone made by the beta cells of the pancreas and regulates blood sugar levels.
+      </div>
+      <div class="highlight" style="margin-top:0.8rem;">
+        When the body cannot produce insulin, a person develops <strong>Type I diabetes mellitus</strong>, which can cause high blood sugar, high blood pressure, poor blood circulation and nerve damage.
+      </div>
+
+      <h2 class="sub-title">Before vs. After Recombinant DNA Technology</h2>
+      <div class="info-grid">
+        <div class="info-box">
+          <h4>❌ Before rDNA Technology</h4>
+          <ul>
+            <li>Insulin came from pig and cow</li>
+            <li>It was expensive, inefficient, and caused allergic reactions</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>✅ After rDNA Technology</h4>
+          <ul>
+            <li>Humulin introduced into bacteria</li>
+            <li>Faster, safer, and cheaper production</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="sub-title">How Bacteria Produce Recombinant Insulin</h2>
+      <div class="highlight">Human insulin consists of <strong>A chain (21 amino acids)</strong> and <strong>B chain (30 amino acids)</strong>.</div>
+      <div class="process-steps" style="margin-top:0.8rem;">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">In humans, insulin is made as one molecule and later folded into its active form. Meanwhile, in bacteria, A and B chain genes are cloned separately into plasmids and linked to the lacZ gene.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Bacteria produce a fusion protein (β-gal + insulin), which is then isolated.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Insulin is separated from β-gal, and the purified A and B chains are combined to form active insulin.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Recombinant insulin is purified for medical use, making production faster, safer, and cheaper for diabetic patients.</div>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Other Therapeutic Proteins from Bacteria</h2>
+      <div class="proteins-grid">
+        <div class="protein-card">
+          <h4>Human Growth Hormone</h4>
+          <p>For treating growth deficiencies</p>
+        </div>
+        <div class="protein-card">
+          <h4>Interferons &amp; Interleukins</h4>
+          <p>For treating immune-related diseases</p>
+        </div>
+        <div class="protein-card">
+          <h4>Clotting Factors</h4>
+          <p>For hemophilia</p>
+        </div>
+        <div class="protein-card">
+          <h4>Erythropoietin (EPO)</h4>
+          <p>For stimulating red blood cell production</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANTIBIOTICS -->
+  <div class="section-block">
+    <div class="section-header">💊 Antibiotics</div>
+    <div class="content-card">
+      <div class="highlight">
+        Microbes produce <strong>antibiotics</strong>, which are substances that inhibit or kill other microbes.
+      </div>
+      <div class="highlight highlight-green" style="margin-top:0.8rem;">
+        The discovery of penicillin by <strong>Alexander Fleming in 1928</strong>, when <em>Penicillium notatum</em> killed nearby <em>Staphylococcus aureus</em>, marked the start of the antibiotic era and led to the first widely used antibiotic in humans.
+      </div>
+
+      <h2 class="sub-title">How Antibiotics Work</h2>
+      <div class="info-box">
+        <h4>Antibiotics kill or stop bacteria by targeting:</h4>
+        <ul>
+          <li>Cell wall synthesis (e.g., Penicillin)</li>
+          <li>Protein synthesis (ribosome inhibitors)</li>
+          <li>DNA replication</li>
+          <li>Metabolic enzyme activity</li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">Problem of Antibiotic Resistance</h2>
+      <div class="highlight">
+        Overuse and misuse of antibiotics in humans and animals have led to antibiotic-resistant bacteria.
+      </div>
+      <div class="info-box" style="margin-top:0.8rem;">
+        <h4>Resistant species examples:</h4>
+        <ul>
+          <li><em>Staphylococcus aureus</em></li>
+          <li><em>Pseudomonas aeruginosa</em></li>
+          <li><em>Streptococcus pneumoniae</em></li>
+          <li><em>Mycobacterium tuberculosis</em></li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">New Frontiers in Antimicrobial Research</h2>
+      <div class="def-card">
+        <div class="term">1. Recombinant bacteria that prevent disease</div>
+        <div class="definition"><em>Streptococcus mutans</em> engineered to reduce tooth decay.</div>
+      </div>
+      <div class="def-card">
+        <div class="term">2. Natural compounds from unusual sources</div>
+        <div class="definition">Licorice-based lollipops (UCLA) kill <em>S. mutans</em>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VACCINES -->
+  <div class="section-block">
+    <div class="section-header">🛡️ Vaccines</div>
+    <div class="content-card">
+      <div class="def-card">
+        <div class="term">Vaccines</div>
+        <div class="definition">Vaccines prepare the immune system to recognize and fight microbes before infection.</div>
+      </div>
+      <div class="highlight highlight-green">
+        <strong>Edward Jenner (1796)</strong> used cowpox to protect against smallpox, leading to vaccination; smallpox was eradicated in 1980.
+      </div>
+
+      <h2 class="sub-title">Examples of Vaccines</h2>
+      <div class="info-box" style="margin-bottom:1rem;">
+        <h4>Classic Vaccines</h4>
+        <ul>
+          <li><strong>DPT</strong> (diphtheria, pertussis, tetanus) — bacterial toxins</li>
+          <li><strong>MMR</strong> (measles, mumps, rubella) — viral infections</li>
+          <li><strong>Polio vaccines</strong> (Salk &amp; Sabin) — reduced poliomyelitis cases</li>
+        </ul>
+      </div>
+      <div class="highlight">
+        <strong>Modern biotechnology:</strong> Recombinant DNA allows bacteria to produce antigens for vaccines safely.
+        <ul style="list-style:none; margin-top:0.5rem;">
+          <li>• <em>E. coli</em> produces hepatitis B surface antigen</li>
+          <li>• Recombinant bacteria also produce antigens for HPV and other viral vaccines</li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">Primer on Antibodies</h2>
+      <div class="highlight">
+        The immune system protects the body by recognizing <strong>antigens</strong> (microbes, toxins, or microbial parts).
+        <ul style="list-style:none; margin-top:0.5rem;">
+          <li>• B cells produce antibodies that attach to specific antigens, with help from T cells; some become plasma cells that release antibodies into body fluids.</li>
+          <li style="margin-top:0.4rem;">• Some B cells become <strong>memory cells</strong>, allowing faster response upon future exposure — this is the basis of vaccination.</li>
+          <li style="margin-top:0.4rem;">• Vaccines stimulate antibody production so the immune system can respond quickly to real infections.</li>
+          <li style="margin-top:0.4rem;">• Biotechnology enhances immunity by producing recombinant antibodies and vaccines for diseases such as hepatitis, influenza, and HIV.</li>
+        </ul>
+      </div>
+
+      <h2 class="sub-title">How Vaccines Are Made?</h2>
+      <div class="def-card">
+        <div class="definition">Vaccines are made using parts of a pathogen or weakened forms of the whole organism that can safely stimulate the immune system. These components act as <strong>antigens</strong>, triggering the body to produce antibodies and memory cells that provide protection against future infections.</div>
+      </div>
+
+      <h2 class="sub-title">Major Types of Vaccines</h2>
+      <div class="vaccine-grid">
+        <div class="vaccine-card">
+          <h4>1. Subunit Vaccines</h4>
+          <p>Contain specific proteins or lipids from a pathogen; can be produced using recombinant DNA technology.</p>
+          <p class="examples">e.g., hepatitis B, Novavax COVID-19</p>
+        </div>
+        <div class="vaccine-card">
+          <h4>2. Attenuated Vaccines</h4>
+          <p>Use live but weakened pathogens to produce strong and long-lasting immunity.</p>
+          <p class="examples">e.g., MMR, Sabin polio</p>
+        </div>
+        <div class="vaccine-card">
+          <h4>3. Inactivated (Killed) Vaccines</h4>
+          <p>Contain killed pathogens; often require booster shots.</p>
+          <p class="examples">e.g., Salk polio, rabies, Sinovac COVID-19</p>
+        </div>
+        <div class="vaccine-card">
+          <h4>4. DNA-Based Vaccines</h4>
+          <p>Use plasmids carrying antigen genes that cause cells to produce the antigen.</p>
+          <p class="examples">e.g., West Nile in horses, AstraZeneca COVID-19</p>
+        </div>
+        <div class="vaccine-card">
+          <h4>5. mRNA Vaccines</h4>
+          <p>Use messenger RNA to instruct cells to produce a harmless viral protein that triggers immunity.</p>
+          <p class="examples">e.g., Pfizer-BioNTech, Moderna</p>
+        </div>
+      </div>
+
+      <h2 class="sub-title">Recombinant Subunit Vaccines</h2>
+      <div class="highlight">
+        Before recombinant DNA technology, subunit vaccines were made by growing pathogens and purifying their surface proteins, which carried contamination risks. Today, scientists clone antigen genes into plasmids and insert them into microbes like <em>Escherichia coli</em> or yeast, allowing large amounts of the antigenic protein to be safely produced and purified for vaccines.
+      </div>
+
+      <h2 class="sub-title">Examples of Recombinant Vaccines</h2>
+      <div class="def-card">
+        <div class="term">Hepatitis B Vaccine</div>
+        <div class="definition">Yeast-produced hepatitis B surface antigen</div>
+      </div>
+      <div class="def-card">
+        <div class="term">Gardasil (HPV Vaccine)</div>
+        <div class="definition">Protects against HPV 16, 18 (cervical cancer) and 6, 11 (genital warts); three doses. Shows how microbial biotechnology produces important vaccine proteins.</div>
+      </div>
+
+      <h2 class="sub-title">Booster Immunization</h2>
+      <div class="highlight">
+        Some vaccines (especially inactivated types) do not provide lifelong protection. Antibody levels decline over time, and booster shots strengthen immune memory.
+        <ul style="list-style:none; margin-top:0.5rem;">
+          <li>• <strong>DPT and tetanus</strong> — effective for about 10 years</li>
+          <li>• <strong>Influenza vaccine</strong> — requires annual immunization</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ASSESSMENT RUBRIC -->
+  <div class="section-block">
+    <div class="section-header">📋 Assessment Rubric — "Map it out"</div>
+    <div class="content-card">
+      <div style="overflow-x:auto;">
+        <table class="rubric-table">
+          <thead>
+            <tr>
+              <th>Criteria</th>
+              <th>Excellent (4 pts)</th>
+              <th>Good (3 pts)</th>
+              <th>Fair (2 pts)</th>
+              <th>Needs Improvement (1 pt)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Content Accuracy</td>
+              <td>All information is scientifically accurate; no errors present.</td>
+              <td>Minor errors but does not affect overall understanding.</td>
+              <td>Some inaccuracies that affect clarity.</td>
+              <td>Many incorrect or misleading concepts.</td>
+            </tr>
+            <tr>
+              <td>Organization &amp; Connections</td>
+              <td>Concepts are logically arranged; connections are clearly labeled and meaningful.</td>
+              <td>Mostly organized with clear connections.</td>
+              <td>Some connections unclear or poorly arranged.</td>
+              <td>Disorganized; relationships not clearly shown.</td>
+            </tr>
+            <tr>
+              <td>Understanding</td>
+              <td>Shows clear relationships between ideas and deeper explanation of processes.</td>
+              <td>Shows basic understanding of relationships.</td>
+              <td>Limited explanation; mostly listing ideas.</td>
+              <td>Minimal understanding shown.</td>
+            </tr>
+            <tr>
+              <td>Presentation</td>
+              <td>Neat, readable, and visually appealing; effective use of arrows, labels, and structure.</td>
+              <td>Generally neat and readable.</td>
+              <td>Somewhat messy but understandable.</td>
+              <td>Difficult to read or poorly presented.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end reviewer-mod3 -->
+
+</div>
+<!-- end #reviewer -->
+
+<!-- ===== FLASHCARDS PAGE ===== -->
+<div id="flashcards" class="page">
+  <div id="flashcards-content" style="max-width:750px;margin:0 auto;padding:2rem;">
+    <div class="flashcard-header">
+      <h1>🃏 Flashcards</h1>
+      <p>Click a card to reveal the answer. Use arrows to navigate.</p>
+    </div>
+
+    <div class="flashcard-module-select">
+      <button class="module-select-btn active" onclick="setFlashcardModule('mod3', this)">🦠 Module 3</button>
+      <button class="module-select-btn" onclick="setFlashcardModule('mod1', this)">🔬 Module 1</button>
+      <button class="module-select-btn" onclick="setFlashcardModule('mod2', this)">🧪 Module 2</button>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="fcProgress" style="width:0%"></div>
+    </div>
+
+    <div class="flashcard-counter" id="fcCounter">Card 1 of 30</div>
+
+    <div class="card-scene" onclick="flipCard()">
+      <div class="card-inner" id="cardInner">
+        <div class="card-face card-front">
+          <div class="card-label">TERM</div>
+          <div class="card-term" id="cardTerm">Loading...</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-label">DEFINITION / ANSWER</div>
+          <div class="card-def" id="cardDef">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-hint">👆 Click the card to flip it</div>
+
+    <div class="flashcard-nav">
+      <button class="fc-btn" onclick="prevCard()">← Previous</button>
+      <button class="fc-btn primary" onclick="flipCard()">Flip Card</button>
+      <button class="fc-btn" onclick="nextCard()">Next →</button>
+    </div>
+    <div style="text-align:center;margin-top:1rem;">
+      <button class="fc-btn" onclick="shuffleCards()">🔀 Shuffle</button>
+      <button class="fc-btn" onclick="resetCards()" style="margin-left:0.5rem;">↩ Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ PAGE ===== -->
+<div id="quiz" class="page">
+  <div style="max-width:750px;margin:0 auto;padding:2rem;">
+    <div class="quiz-header">
+      <h1>📝 Quiz</h1>
+      <p style="color:#555;">Test your knowledge on Microbial Biotechnology</p>
+    </div>
+
+    <div class="quiz-module-select">
+      <button class="module-select-btn active" id="quizModBtn3" onclick="setQuizModule('mod3', this)">🦠 Module 3</button>
+      <button class="module-select-btn" id="quizModBtn1" onclick="setQuizModule('mod1', this)">🔬 Module 1</button>
+      <button class="module-select-btn" id="quizModBtn2" onclick="setQuizModule('mod2', this)">🧪 Module 2</button>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="quizStart" class="quiz-start">
+      <div class="icon">🧬</div>
+      <h2 id="quizModTitle">🦠 Module 3: Microbial Biotechnology</h2>
+      <p>35 questions per module — Multiple Choice, True/False &amp; Identification.</p>
+      <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;">
+        <span style="background:#d4eefb;color:#1a5a8e;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;">Multiple Choice</span>
+        <span style="background:#d4f0e8;color:#1a7a3c;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;">True / False</span>
+        <span style="background:#fef3d4;color:#8a6a00;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;">Identification</span>
+      </div>
+      <button class="start-btn" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+
+    <!-- Question Area -->
+    <div id="quizQuestion" class="quiz-question-wrap">
+      <div class="quiz-progress-info">
+        <span id="qProgress">Question 1 of 20</span>
+        <span class="quiz-score-badge" id="qScore">Score: 0</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="quizProgressBar" style="width:5%"></div>
+      </div>
+
+      <div class="question-card">
+        <span class="question-type-badge type-mc" id="qTypeBadge">Multiple Choice</span>
+        <div class="question-text" id="qText"></div>
+        <ul class="options-list" id="qOptions"></ul>
+        <div class="feedback-box" id="qFeedback"></div>
+      </div>
+
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+
+    <!-- Results -->
+    <div id="quizResults" class="quiz-results">
+      <div style="font-size:3rem">🎉</div>
+      <h2 style="font-family:'Baloo 2',cursive;color:var(--teal);">Quiz Complete!</h2>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-label" id="resultLabel">out of 35 questions</div>
+      <div class="result-message" id="resultMessage"></div>
+      <h3 style="text-align:left;color:var(--teal);margin-bottom:0.8rem;font-size:1rem;">Review Your Answers:</h3>
+      <div class="review-list scrollable" id="reviewList"></div>
+      <button class="start-btn" onclick="restartQuiz()">Try Again 🔄</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== PAGE NAVIGATION =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'flashcards') renderFlashcard();
+}
+
+function setReviewerModule(mod) {
+  document.querySelectorAll('.reviewer-module').forEach(m => m.style.display = 'none');
+  const el = document.getElementById('reviewer-' + mod);
+  if (el) el.style.display = 'block';
+  document.querySelectorAll('.reviewer-tab').forEach(t => t.classList.remove('active'));
+  const tab = document.getElementById('tab-' + mod);
+  if (tab) tab.classList.add('active');
+}
+
+// ===== FLASHCARD DATA =====
+const flashcardsData = {
+  mod1: [
+    { term: "Biotechnology", def: "The use of living organisms or their products to improve life and solve problems. Includes using cells, enzymes, or genes to make useful products for people, animals, and the environment." },
+    { term: "Fermentation", def: "Process using microorganisms to produce foods and drinks (e.g., bread, wine, beer, yogurt). An ancient biotechnology practice using Saccharomyces cerevisiae." },
+    { term: "Selective Breeding", def: "Choosing organisms with desired traits to reproduce together to improve quality and productivity. E.g., larger/sweeter fruits, animals producing more meat or milk." },
+    { term: "Recombinant DNA Technology", def: "Combining DNA from different organisms to produce new genetic combinations. Developed in the 1960s–70s; led to production of insulin, HGH, and blood-clotting proteins." },
+    { term: "Human Genome Project", def: "Research effort that mapped all human genes (1990–2003). Revealed humans have fewer genes than expected. Opened new fields in medicine, genetics, and molecular biology." },
+    { term: "Recombinant Proteins", def: "Proteins produced through gene-cloning techniques. Process: insert human genes into bacteria/mammalian cells → grow in cell culture → harvest in bioreactors → purify." },
+    { term: "Bioreactors / Fermenters", def: "Equipment used for mass cultivation of genetically modified cells for production of recombinant proteins." },
+    { term: "Gene Therapy", def: "Introduces new genes into human cells to treat or cure genetic diseases. Successful trials in blood diseases; promising for nervous system diseases." },
+    { term: "Tissue Engineering", def: "Growing replacement organs in the laboratory for transplantation. Bioengineered organs have lower risk of rejection than donor organs." },
+    { term: "Transgenic Animals", def: "Animals genetically modified to produce useful proteins (e.g., ATryn protein from genetically modified goats). Also used in research via gene knockout experiments." },
+    { term: "Dolly the Sheep", def: "First mammal cloned via nucleus transfer in 1997. Historic milestone in animal biotechnology. Raised ethical questions about cloning." },
+    { term: "Molecular Pharming", def: "Using plants (e.g., tobacco) to produce pharmaceutical proteins. Part of Agricultural Biotechnology." },
+    { term: "Bioremediation", def: "Use of living organisms (bacteria, fungi, plants) to clean polluted environments. Examples: 1989 Exxon Valdez oil spill; 2010 Deepwater Horizon — microbial enzymes degraded oil." },
+    { term: "Aquaculture", def: "Fish farming; provides nearly half of the world's seafood. Involves disease-resistant fish, transgenic salmon that grow faster, and vaccines to reduce losses." },
+    { term: "Bioprospecting", def: "Searching for valuable compounds in nature, especially marine environments, for medical and industrial applications." },
+    { term: "DNA Fingerprinting", def: "Primary tool of forensic biotechnology. Used to identify individuals from blood, hair, or saliva; solve crimes; confirm paternity; trace disease outbreak sources." },
+    { term: "Pharmacogenomics", def: "Using a patient's genetic profile to design personalized treatment. SNPs (Single Nucleotide Polymorphisms) explain why drugs work differently for different people." },
+    { term: "Stem Cells", def: "Cells that can develop into different cell types (skin, nerve, muscle). Potential to replace damaged organs, treat paralysis, heart disease, and diabetes." },
+    { term: "Induced Pluripotent Stem Cells (iPSCs)", def: "Stem cells created without destroying embryos. An ethical approach to stem cell collection. Created from adult tissue sources." },
+    { term: "Nanotechnology in Medicine", def: "Microscopic drug delivery tools (nanovesicles) that deliver drugs directly to diseased cells, reducing damage to healthy tissues and improving treatment effectiveness." },
+    { term: "Microbial Biotechnology (Type)", def: "Uses microorganisms (bacteria, yeast, fungi) for ancient applications (bread, cheese, wine) and modern applications (enzymes, vaccines, insulin, bioremediation)." },
+    { term: "Agricultural Biotechnology", def: "Improves plants, animals, and food production. Pest-resistant crops, nutrient-enriched crops, biofuels, molecular pharming. Global food production must increase ~70% by 2050." },
+    { term: "Medical Biotechnology", def: "Improves human health through cancer research, genomic projects, gene therapy, stem cell technology, and personalized medicine. Includes Human Genome Project and 1000 Genomes Project." },
+    { term: "Quality Assurance (QA)", def: "All activities ensuring a biotechnology product is safe, meets performance standards. Comprehensive oversight during entire production process." },
+    { term: "Quality Control (QC)", def: "Laboratory testing specifically during production to maintain consistent product quality. Product-specific testing distinct from QA." },
+    { term: "FDA", def: "Food and Drug Administration. US agency that oversees biotechnology products, ensures safety for human use, and approves products for public use." },
+    { term: "Proteome", def: "The collection of all proteins made by the genes of an organism. The Human Genome Project gave insights into gene-protein interactions." },
+    { term: "Humulin (1982)", def: "Recombinant human insulin introduced by Genentech — the first biotechnology product approved for human use. Replaced insulin derived from pig/cow pancreases." },
+    { term: "1000 Genomes Project", def: "Post-2000 project that compared human genes with other organisms to enhance understanding of how genes work and influence disease resistance." },
+    { term: "Cell Culture", def: "Growing cells with nutrients in controlled environments (fermenters/bioreactors). Essential step in producing recombinant proteins at industrial scale." }
+  ],
+  mod2: [
+    { term: "Recombinant DNA Technology", def: "Combining DNA molecules from different sources to form new genetic combinations. Synonymous with gene cloning and genetic engineering, though each emphasizes a different aspect." },
+    { term: "Gene Cloning", def: "Making identical copies of a particular gene for scientific or medical use." },
+    { term: "Genetic Engineering", def: "Altering the genetic makeup of an organism using molecular tools." },
+    { term: "Clone", def: "From Greek 'twig.' In biology: a molecule, cell, or organism that is an exact copy of another." },
+    { term: "DNA Ligase", def: "Enzyme that joins DNA fragments by sealing breaks in the backbone. Originally found joining Okazaki fragments during replication. Vital in recombinant DNA technology." },
+    { term: "Bacteriophage (Phage)", def: "Virus that infects bacteria. Key model organism in early molecular biology research. Used as a cloning vector." },
+    { term: "Insert DNA", def: "The foreign DNA fragment introduced into a vector for cloning." },
+    { term: "Restriction Site", def: "Specific palindromic DNA sequence recognized and cut by a restriction enzyme." },
+    { term: "Palindrome (DNA)", def: "Sequence that reads the same on complementary strands in the 5'→3' direction. Example: 5'-GAATTC-3'. These are the recognition sites for restriction enzymes." },
+    { term: "Restriction Enzymes", def: "Bacterial proteins that cut DNA at specific restriction sites. Called 'molecular scissors.' Defense mechanism against bacteriophages. Named after source bacterium (e.g., EcoRI = E. coli R, enzyme I)." },
+    { term: "Sticky Ends (Cohesive Ends)", def: "Single-stranded overhanging ends produced after restriction enzyme cutting. PREFERRED for gene cloning — compatible ends join easily by hydrogen bonding. Produced by EcoRI, BamHI, HindIII, TaqI." },
+    { term: "Blunt Ends", def: "Both strands cut at exact same position — no overhangs. Less efficient for directional cloning but more versatile. Produced by AluI, HaeIII, SmaI." },
+    { term: "EcoRI", def: "Restriction enzyme from Escherichia coli. Recognition site: G↓AATTC. Produces cohesive (sticky) ends. Used by Paul Berg in creation of first recombinant DNA molecule." },
+    { term: "HindIII", def: "Restriction enzyme from Haemophilus influenzae. Recognition site: A↓AGCTT. Produces cohesive ends. Isolated by Hamilton Smith — proved enzymes cut at specific palindromic sequences." },
+    { term: "Blue-White Selection", def: "'Blue = Boring, White = Winner.' Blue colonies: lacZ intact → β-galactosidase produced → X-gal turns blue → NO insert. White colonies: lacZ disrupted → NO β-gal → X-gal stays clear → insert PRESENT." },
+    { term: "Competent Cells / Transformation", def: "Cells made capable of taking up DNA. Heat shock method: CaCl₂ treatment + 42°C heat shock. Electroporation: brief electric pulse. Both introduce recombinant plasmids into E. coli." },
+    { term: "Origin of Replication (ori)", def: "Site on a plasmid where replication begins. Allows independent replication from the bacterial chromosome. High-copy-number plasmids produce hundreds to thousands of copies per cell." },
+    { term: "Multiple Cloning Site (MCS)", def: "Short region of a vector with restriction sites for many enzymes. Allows flexible DNA insertion without disrupting important vector regions." },
+    { term: "Selectable Marker Genes", def: "Genes (e.g., ampicillin resistance, tetracycline resistance, lacZ) that allow identification of transformed cells and which contain recombinant plasmids." },
+    { term: "Plasmid Vector", def: "Most widely used cloning vector. Max insert ~6–12 kb. Used for DNA cloning, protein expression, direct sequencing. pSC101 was the first plasmid vector, created by Stanley Cohen." },
+    { term: "BAC (Bacterial Artificial Chromosome)", def: "Vector derived from bacterial F-factors. Max insert ~300 kb. 1–2 copies per cell — low copy ensures stability. Critical role in Human Genome Project." },
+    { term: "YAC (Yeast Artificial Chromosome)", def: "Contains telomeres, centromere, origin of replication. Largest inserts: up to 2 megabases. Functions like actual chromosomes inside yeast cells. Essential for cloning and mapping human chromosomes." },
+    { term: "Ti Vector", def: "Tumor-inducing plasmid from Rhizobium radiobacter. Naturally transfers T-DNA into plant genome causing crown gall disease. Modified (harmful genes removed) for safe GM crop development." },
+    { term: "Expression Vector", def: "Vector designed for high-level protein production (insulin, growth hormone) in bacteria or mammalian cells. Contains strong promoters for gene expression. Used in gene therapy." },
+    { term: "DNA Library", def: "A collection of cloned DNA fragments from an organism, stored in bacteria or viruses. Solved the problem of shotgun cloning. Preserved long-term; searched repeatedly to find specific genes." },
+    { term: "Genomic Library", def: "Contains ALL of an organism's DNA including exons, introns, and non-coding regions. Very large — like 'needle in a haystack.' Uses restriction enzymes. Best for genome structure and regulatory region studies." },
+    { term: "cDNA Library", def: "Contains only EXPRESSED (active) genes, derived from mRNA using reverse transcriptase. No introns, no non-coding DNA. Smaller, focused collection. Best for protein production in bacteria." },
+    { term: "Reverse Transcriptase", def: "Enzyme used to synthesize single-stranded cDNA from an mRNA template. Key enzyme in creating a cDNA library. Works in the reverse direction of normal transcription." },
+    { term: "Colony Hybridization", def: "Method to identify which bacterial colony carries the target gene. Uses a labeled DNA probe complementary to the target gene. Detected via autoradiography or fluorescent imaging." },
+    { term: "DNA Probe", def: "A short, single-stranded DNA sequence complementary to the target gene. Labeled with radioactive isotopes or fluorescent dyes. Binds only to matching sequences via hydrogen bonding." },
+    { term: "Mnemonic: SRL — The 3 Tools", def: "S = Scissors (Restriction enzymes — cut DNA). R = Route (Plasmid/Vector — carries DNA into host). L = Ligase (DNA Ligase — joins DNA pieces covalently)." }
+  ],
+  mod3: [
+    { term: "Microbial Biotechnology", def: "Uses natural or genetically engineered microorganisms to produce essential products. These microbes play a vital role in food production and in manufacturing medically important recombinant proteins that improve human health." },
+    { term: "Eukaryotic", def: "Cell type with a true nucleus (membrane-bound). Examples include yeast, fungi, plants, and animals." },
+    { term: "Prokaryotic", def: "Cell type that lacks a true nucleus. Two major domains: Bacteria and Archea. Includes halophiles and thermophiles." },
+    { term: "Nucleus (vs. Nucleoid)", def: "Nucleus: spherical/oval, double membrane bound, contains DNA, RNA, histones. Nucleoid: irregularly shaped in prokaryotes, lacks a membrane, contains mainly DNA." },
+    { term: "Key Structural Features of Bacteria", def: "DNA is single circular chromosome; contains Plasmid; no membrane-bound organelles; cell wall made of peptidoglycan; some have capsule." },
+    { term: "Gram-Positive Bacteria", def: "Bacteria that stain purple in the Gram stain technique. They have thick cell walls." },
+    { term: "Gram-Negative Bacteria", def: "Bacteria that stain pink in the Gram stain technique. They have thin cell walls, an outer membrane, and a periplasm." },
+    { term: "Cocci", def: "Spherical-shaped bacteria arrangement." },
+    { term: "Bacilli", def: "Rod-shaped bacteria arrangement." },
+    { term: "Spirilla", def: "Spiral-shaped bacteria arrangement." },
+    { term: "Binary Fission", def: "The primary method of bacterial reproduction where the cell grows, duplicates its DNA, and splits into two identical daughter cells." },
+    { term: "Bacteria as Model Organisms", def: "Bacteria are ideal model organisms because they: grow quickly, are easy to culture, and can be genetically manipulated." },
+    { term: "Saccharomyces cerevisiae", def: "First eukaryotic organism to have its entire genome sequenced. Gene expression closely resembles that in human cells. Used in brewing beer, making wine, and baking bread." },
+    { term: "Pichia pastoris", def: "Yeast that grows to high cell densities in liquid culture, possesses strong promoters, enables batch processing and large-scale production of proteins and enzymes. Used in production of vaccines, enzymes, and recombinant proteins." },
+    { term: "Taq Polymerase", def: "A heat-stable DNA polymerase derived from Thermus aquaticus. Used in PCR (polymerase chain reaction). Organism survived up to 121°C — an example of bioprospecting." },
+    { term: "Bioprospecting", def: "The search for species or their products that have useful biotechnological applications. Example: finding Taq polymerase from organisms surviving up to 121°C." },
+    { term: "Cellulase", def: "Enzyme that breaks down cellulose. Used to create digestible animal feed and soften fabrics in textile. Produced by E. coli, Trichoderma reesei and Aspergillus niger." },
+    { term: "Subtilisin", def: "Enzyme from Bacillus subtilis. Used to remove stains in laundry detergents." },
+    { term: "Amylases", def: "Enzymes that break down starches. Used in corn syrup production." },
+    { term: "Bacterial Transformation", def: "The process by which bacteria take in DNA from their surrounding environment." },
+    { term: "Competent Cells", def: "Bacterial cells made capable of taking up external DNA, achieved by treating bacteria with an ice-cold solution of calcium chloride." },
+    { term: "Antibiotic Selection", def: "The process where only cells that have successfully taken up the plasmid DNA with the resistance gene will survive and form colonies." },
+    { term: "Electroporation", def: "A method for introducing DNA into bacterial cells where an instrument known as an electroporator delivers a brief electrical pulse to a mixture of bacterial cells and DNA." },
+    { term: "Fermentation", def: "A key microbial process in which microbes convert sugars into useful products such as lactic acid, ethanol, and carbon dioxide." },
+    { term: "Rennin / Chymosin", def: "Enzyme used in cheese production that coagulates milk. The rennin gene was cloned and expressed in Aspergillus niger, becoming the first genetically engineered food ingredient approved by the FDA in 1990." },
+    { term: "Recombinant Insulin (Humulin)", def: "Human insulin produced by bacteria. A and B chain genes are cloned separately into plasmids linked to the lacZ gene. Bacteria produce a fusion protein, then insulin is separated, purified, and combined for medical use." },
+    { term: "Type I Diabetes Mellitus", def: "Condition that develops when the body cannot produce insulin. Can cause high blood sugar, high blood pressure, poor blood circulation, and nerve damage." },
+    { term: "Vaccines", def: "Biological preparations that prepare the immune system to recognize and fight microbes before infection. Made using parts of a pathogen or weakened forms that stimulate immunity." },
+    { term: "Major Types of Vaccines", def: "1. Subunit (e.g., Hepatitis B, Novavax). 2. Attenuated (e.g., MMR, Sabin polio). 3. Inactivated/Killed (e.g., Salk polio, Sinovac). 4. DNA-Based (e.g., AstraZeneca). 5. mRNA (e.g., Pfizer-BioNTech, Moderna)." },
+    { term: "Gardasil (HPV Vaccine)", def: "Recombinant vaccine that protects against HPV 16, 18 (cervical cancer) and 6, 11 (genital warts). Requires three doses. Shows how microbial biotechnology produces important vaccine proteins." }
+  ]
+};
+
+let currentCards = [...flashcardsData.mod3];
+let currentCardIndex = 0;
+let isFlipped = false;
+
+function setFlashcardModule(mod, btn) {
+  document.querySelectorAll('.module-select-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentCards = [...flashcardsData[mod]];
+  currentCardIndex = 0;
+  renderFlashcard();
+}
+
+function renderFlashcard() {
+  const card = currentCards[currentCardIndex];
+  if (!card) return;
+  document.getElementById('cardTerm').textContent = card.term;
+  document.getElementById('cardDef').textContent = card.def;
+  document.getElementById('fcCounter').textContent = `Card ${currentCardIndex + 1} of ${currentCards.length}`;
+  const pct = ((currentCardIndex) / currentCards.length) * 100;
+  document.getElementById('fcProgress').style.width = pct + '%';
+  isFlipped = false;
+  document.getElementById('cardInner').classList.remove('flipped');
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('cardInner').classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  if (currentCardIndex < currentCards.length - 1) {
+    currentCardIndex++;
+    renderFlashcard();
+  }
+}
+
+function prevCard() {
+  if (currentCardIndex > 0) {
+    currentCardIndex--;
+    renderFlashcard();
+  }
+}
+
+function shuffleCards() {
+  for (let i = currentCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [currentCards[i], currentCards[j]] = [currentCards[j], currentCards[i]];
+  }
+  currentCardIndex = 0;
+  renderFlashcard();
+}
+
+function resetCards() {
+  currentCards = [...flashcardsData.mod3];
+  currentCardIndex = 0;
+  renderFlashcard();
+}
+
+// ===== QUIZ DATA =====
+const allQuizData = {
+  mod3: [
+  { type:"mc", q:"What is bacterial transformation?", options:["The process by which bacteria divide by binary fission","The process by which bacteria take in DNA from their surrounding environment","The process of bacteria producing antibiotics","The process of bacteria undergoing Gram staining"], answer:1, explanation:"Bacterial transformation is the process by which bacteria take in DNA from their surrounding environment." },
+  { type:"mc", q:"Which yeast was the first eukaryotic organism to have its entire genome sequenced?", options:["Pichia pastoris","Aspergillus niger","Saccharomyces cerevisiae","Lactobacillus acidophilus"], answer:2, explanation:"Saccharomyces cerevisiae was the first eukaryotic organism to have its entire genome sequenced, and its gene expression closely resembles that in human cells." },
+  { type:"mc", q:"What enzyme is used in cheese production that was the first genetically engineered food ingredient approved by the FDA in 1990?", options:["Amylase","Cellulase","Subtilisin","Rennin (Chymosin)"], answer:3, explanation:"Rennin, also called chymosin, coagulates milk for cheese production. The rennin gene was cloned and expressed in Aspergillus niger — the first genetically engineered food ingredient approved by the FDA in 1990." },
+  { type:"mc", q:"Which bacteria produce lactic acid fermentation that makes yogurt and sour cream?", options:["Saccharomyces cerevisiae and Pichia pastoris","Streptococcus thermophilus and Lactobacillus bulgaricus","E. coli and Bacillus subtilis","Penicillium notatum and Staphylococcus aureus"], answer:1, explanation:"Streptococcus thermophilus and Lactobacillus bulgaricus produce yogurt and sour cream through lactic acid fermentation." },
+  { type:"mc", q:"Alexander Fleming discovered penicillin in 1928 when which organism killed nearby Staphylococcus aureus?", options:["Bacillus subtilis","Aspergillus niger","Penicillium notatum","Saccharomyces cerevisiae"], answer:2, explanation:"Alexander Fleming discovered penicillin in 1928 when Penicillium notatum killed nearby Staphylococcus aureus, marking the start of the antibiotic era." },
+  { type:"mc", q:"What is the key structural difference between the nucleus and the nucleoid?", options:["The nucleus contains only DNA; nucleoid has DNA, RNA, and histones","The nucleus is double membrane-bound while the nucleoid lacks a membrane","The nucleus is found in bacteria; the nucleoid is found in animal cells","There is no difference between them"], answer:1, explanation:"The nucleus is double membrane-bound and spherical/oval shaped. The nucleoid is irregularly shaped in prokaryotes and lacks a membrane." },
+  { type:"mc", q:"Which type of vaccine uses live but weakened pathogens to produce strong and long-lasting immunity?", options:["Subunit vaccine","Inactivated (killed) vaccine","Attenuated vaccine","mRNA vaccine"], answer:2, explanation:"Attenuated vaccines use live but weakened pathogens to produce strong and long-lasting immunity (e.g., MMR, Sabin polio)." },
+  { type:"mc", q:"What is electroporation?", options:["A method of growing bacteria in culture","A method for introducing DNA into bacterial cells using a brief electrical pulse","A technique for staining bacteria","A process for purifying recombinant proteins"], answer:1, explanation:"Electroporation is a method for introducing DNA into bacterial cells where an electroporator delivers a brief electrical pulse to a mixture of bacterial cells and DNA." },
+  { type:"mc", q:"Which enzyme from Bacillus subtilis is used to remove stains in laundry detergents?", options:["Amylase","Cellulase","Subtilisin","Taq polymerase"], answer:2, explanation:"Subtilisin, derived from Bacillus subtilis, is used to remove stains in laundry detergents." },
+  { type:"mc", q:"Human insulin consists of which two polypeptide chains?", options:["A chain (51 aa) and B chain (51 aa)","A chain (21 aa) and B chain (30 aa)","A chain (30 aa) and B chain (21 aa)","A chain (15 aa) and B chain (36 aa)"], answer:1, explanation:"Human insulin consists of A chain (21 amino acids) and B chain (30 amino acids)." },
+  { type:"mc", q:"The Gardasil (HPV) vaccine protects against which HPV strains associated with cervical cancer?", options:["HPV 6 and 11","HPV 16 and 18","HPV 1 and 2","HPV 31 and 45"], answer:1, explanation:"Gardasil protects against HPV 16 and 18 (cervical cancer) and HPV 6 and 11 (genital warts)." },
+  { type:"mc", q:"Which microbe grows to high cell densities in liquid culture with strong promoters for large-scale recombinant protein production?", options:["Saccharomyces cerevisiae","Lactobacillus acidophilus","Pichia pastoris","Thermus aquaticus"], answer:2, explanation:"Pichia pastoris grows to high cell densities in liquid culture, possesses strong promoters, and is used for batch processing and large-scale production of proteins, vaccines, and recombinant proteins." },
+  { type:"mc", q:"What condition develops when the body cannot produce insulin?", options:["Type II diabetes mellitus","Type I diabetes mellitus","Hypoglycemia","Hemophilia"], answer:1, explanation:"When the body cannot produce insulin, a person develops Type I diabetes mellitus." },
+  { type:"mc", q:"What step is used to make bacterial cells competent for transformation?", options:["Treating bacteria with a hot NaCl solution","Treating bacteria with an ice-cold solution of calcium chloride","Exposing bacteria to UV light","Growing bacteria in antibiotic media"], answer:1, explanation:"Bacterial cells are made competent by treating them with an ice-cold solution of calcium chloride." },
+  { type:"mc", q:"Which of the following is NOT a therapeutic protein produced using recombinant DNA technology?", options:["Human growth hormone","Erythropoietin (EPO)","Rennin for cheese making","Clotting factors for hemophilia"], answer:2, explanation:"Rennin is a food enzyme used in cheese production, not a therapeutic protein." },
+  { type:"mc", q:"Antibiotics kill or inhibit bacteria by targeting which of the following?", options:["Only cell wall synthesis","Only DNA replication","Cell wall synthesis, protein synthesis, DNA replication, and metabolic enzyme activity","Only metabolic enzyme activity"], answer:2, explanation:"Antibiotics work by targeting essential bacterial processes: cell wall synthesis, protein synthesis, DNA replication, and metabolic enzyme activity." },
+  { type:"mc", q:"In the heat shock step during bacterial transformation, what temperature range is applied?", options:["10°C–20°C for 10 minutes","37°C–42°C for approximately 1 minute","50°C–60°C for 5 minutes","70°C–80°C for 30 seconds"], answer:1, explanation:"Heat shock is applied at 37°C–42°C for approximately 1 minute, which causes the DNA to enter the cell." },
+  { type:"mc", q:"Which bacteria is engineered to reduce tooth decay as a new frontier in antimicrobial research?", options:["Bacillus subtilis","Streptococcus mutans","Lactobacillus bulgaricus","Pseudomonas aeruginosa"], answer:1, explanation:"Recombinant Streptococcus mutans was engineered to reduce tooth decay." },
+  { type:"mc", q:"Erythropoietin (EPO) produced via recombinant DNA technology is used for what medical purpose?", options:["Treating growth deficiencies","Treating hemophilia","Stimulating red blood cell production","Treating immune-related diseases"], answer:2, explanation:"Erythropoietin (EPO) is used for stimulating red blood cell production." },
+  { type:"mc", q:"Which vaccine type uses plasmids carrying antigen genes that cause cells to produce the antigen?", options:["Attenuated vaccine","Inactivated vaccine","DNA-based vaccine","Subunit vaccine"], answer:2, explanation:"DNA-based vaccines use plasmids carrying antigen genes that cause cells to produce the antigen (e.g., AstraZeneca COVID-19)." },
+  { type:"tf", q:"True or False: Gram-positive bacteria stain pink and have thin cell walls.", options:["True","False"], answer:1, explanation:"FALSE. Gram-positive bacteria stain PURPLE and have THICK cell walls. Gram-negative bacteria stain pink and have thin cell walls." },
+  { type:"tf", q:"True or False: Before recombinant DNA technology, insulin used in medicine came from pigs and cows.", options:["True","False"], answer:0, explanation:"TRUE. Before recombinant DNA technology, insulin came from pig and cow. It was expensive, inefficient, and caused allergic reactions." },
+  { type:"tf", q:"True or False: mRNA vaccines use messenger RNA to instruct cells to produce a harmless viral protein that triggers immunity.", options:["True","False"], answer:0, explanation:"TRUE. mRNA vaccines (e.g., Pfizer-BioNTech, Moderna) use messenger RNA to instruct cells to produce a harmless viral protein that triggers immunity." },
+  { type:"tf", q:"True or False: Prokaryotic cells have membrane-bound organelles.", options:["True","False"], answer:1, explanation:"FALSE. Prokaryotic cells have NO membrane-bound organelles. This is one of their defining structural features." },
+  { type:"tf", q:"True or False: Edward Jenner used cowpox to protect against smallpox in 1796, and smallpox was officially eradicated in 1980.", options:["True","False"], answer:0, explanation:"TRUE. Edward Jenner (1796) used cowpox to protect against smallpox. Smallpox was eradicated in 1980." },
+  { type:"tf", q:"True or False: Saccharomyces cerevisiae can grow both aerobically and anaerobically.", options:["True","False"], answer:0, explanation:"TRUE. Yeast can grow aerobic and anaerobic, making them highly versatile for industrial applications." },
+  { type:"tf", q:"True or False: Antibiotic selection means all bacterial cells survive after transformation regardless of whether they took up the plasmid.", options:["True","False"], answer:1, explanation:"FALSE. Only cells that have successfully taken up the plasmid DNA with the resistance gene will survive and form colonies." },
+  { type:"tf", q:"True or False: Some B cells become memory cells after exposure to an antigen, which is the basis of how vaccination works.", options:["True","False"], answer:0, explanation:"TRUE. Some B cells become memory cells, allowing faster response upon future exposure — this is the basis of vaccination." },
+  { type:"id", q:"IDENTIFICATION: This is the microbial enzyme derived from Thermus aquaticus that is used in PCR and can survive temperatures up to 121°C.", options:["Taq polymerase","Pfu DNA polymerase","Restriction enzyme","DNA ligase"], answer:0, explanation:"Taq polymerase is derived from Thermus aquaticus. It is heat-stable and is the key enzyme used in PCR. Its discovery is an example of bioprospecting." },
+  { type:"id", q:"IDENTIFICATION: This is the term for the process where only bacteria that have taken up the resistance gene-containing plasmid survive on antibiotic media.", options:["Bacterial transformation","Electroporation","Antibiotic selection","Binary fission"], answer:2, explanation:"Antibiotic selection is the process where only cells that have successfully taken up the plasmid DNA with the resistance gene will survive and form colonies." },
+  { type:"id", q:"IDENTIFICATION: This scientist used cowpox in 1796 to develop protection against smallpox, pioneering the concept of vaccination.", options:["Louis Pasteur","Alexander Fleming","Edward Jenner","Robert Koch"], answer:2, explanation:"Edward Jenner (1796) used cowpox to protect against smallpox, leading to vaccination. Smallpox was eradicated in 1980." },
+  { type:"id", q:"IDENTIFICATION: This is the term for the key microbial process in which microbes convert sugars into products such as lactic acid, ethanol, and carbon dioxide.", options:["Binary fission","Transformation","Fermentation","Bioprospecting"], answer:2, explanation:"Fermentation is a key microbial process in which microbes convert sugars into useful products such as lactic acid, ethanol, and carbon dioxide." },
+  { type:"id", q:"IDENTIFICATION: This is the name of the recombinant human insulin produced by bacteria, replacing the older pig/cow-derived version.", options:["Rennin","Humulin","Subtilisin","Chymosin"], answer:1, explanation:"Humulin is the recombinant human insulin. Its production using recombinant DNA technology made insulin production faster, safer, and cheaper." },
+  { type:"id", q:"IDENTIFICATION: This is the search for organisms in nature — such as extremophiles surviving at 121°C — that produce enzymes useful in biotechnology.", options:["Gene cloning","Electroporation","Bioprospecting","Antibiotic selection"], answer:2, explanation:"Bioprospecting is the search for species with useful biotechnological applications." },
+  { type:"id", q:"IDENTIFICATION: This type of prokaryote is classified in the domain that includes halophiles and thermophiles, distinct from the Bacteria domain.", options:["Fungi","Archea","Protista","Eukaryota"], answer:1, explanation:"Archea is the second major prokaryotic domain. It includes extreme-environment organisms like halophiles (salt-loving) and thermophiles (heat-loving)." },
+  { type:"id", q:"IDENTIFICATION: This is the material that makes up bacterial cell walls, and is the target of antibiotics like penicillin.", options:["Cellulose","Chitin","Peptidoglycan","Phospholipid"], answer:2, explanation:"The cell wall of bacteria is made of peptidoglycan. Antibiotics like penicillin target cell wall synthesis, disrupting this layer." }
+  ],
+
+  mod1: [
+  { type:"mc", q:"What is the definition of biotechnology?", options:["The use of computers to analyze biological data","The use of living organisms or their products to improve life and solve problems","The study of microscopic organisms only","The process of creating synthetic DNA in a laboratory"], answer:1, explanation:"Biotechnology is the use of living organisms or their products to improve life and solve problems, including using cells, enzymes, or genes to make useful products." },
+  { type:"mc", q:"Which ancient civilization practiced fermentation using Saccharomyces cerevisiae for bread, wine, and beer production?", options:["Only the Egyptians","Only the Chinese","Chinese, Greeks, Romans, Babylonians, and Egyptians","Only the Greeks"], answer:2, explanation:"Early civilizations including the Chinese, Greeks, Romans, Babylonians, and Egyptians all practiced fermentation — an ancient form of biotechnology." },
+  { type:"mc", q:"What was the significance of Genentech introducing recombinant insulin (Humulin) in 1982?", options:["It was the first vaccine ever produced","It was the first biotechnology product approved for human use","It was the first antibiotic discovered","It was the first application of DNA fingerprinting"], answer:1, explanation:"Genentech's introduction of recombinant insulin (Humulin) in 1982 was the first biotechnology product approved for human use." },
+  { type:"mc", q:"The Human Genome Project began in 1990 and was completed in which year?", options:["1995","2000","2003","2010"], answer:2, explanation:"The Human Genome Project began in 1990 and was completed in 2003, providing a complete picture of the human genetic code." },
+  { type:"mc", q:"Which type of biotechnology uses organisms to clean polluted environments such as oil spills?", options:["Agricultural Biotechnology","Forensic Biotechnology","Bioremediation","Aquatic Biotechnology"], answer:2, explanation:"Bioremediation is the use of living organisms (bacteria, fungi, plants) to clean polluted environments. Famous examples include the 1989 Exxon Valdez and 2010 Deepwater Horizon oil spills." },
+  { type:"mc", q:"What was cloned in 1997 using nucleus transfer, becoming the first mammal cloned this way?", options:["A cow named Bessie","A sheep named Dolly","A monkey named Darwin","A goat named Heidi"], answer:1, explanation:"Dolly the sheep was cloned in 1997 through nucleus transfer — the first mammal cloned this way — marking a historic milestone in animal biotechnology." },
+  { type:"mc", q:"Which US agency oversees biotechnology products and ensures safety for human use?", options:["EPA","FDA","USDA","NIH"], answer:1, explanation:"The FDA (Food and Drug Administration) oversees biotechnology products, ensures safety for human use, and approves products for public use." },
+  { type:"mc", q:"What is pharmacogenomics?", options:["The study of pharmaceutical manufacturing processes","Using a patient's genetic profile to design personalized treatment","Mass production of drugs in bioreactors","The process of testing drugs in clinical trials"], answer:1, explanation:"Pharmacogenomics uses a patient's genetic profile to design personalized treatment. SNPs (Single Nucleotide Polymorphisms) explain why drugs work differently for different people." },
+  { type:"mc", q:"Transgenic salmon are an example of which type of biotechnology application?", options:["Bioremediation","Medical Biotechnology","Forensic Biotechnology","Aquatic Biotechnology (Aquaculture)"], answer:3, explanation:"Transgenic salmon that grow faster than traditional salmon are an example of Aquatic Biotechnology / Aquaculture." },
+  { type:"mc", q:"Which groundbreaking innovation involves growing replacement organs in the laboratory with lower rejection risk?", options:["Gene Therapy","Tissue Engineering","Marine Biotechnology","Pharmacogenomics"], answer:1, explanation:"Tissue Engineering involves growing replacement organs for transplantation. Bioengineered organs have a lower risk of rejection than donor organs." },
+  { type:"mc", q:"What are recombinant proteins?", options:["Proteins that cause allergic reactions","Proteins produced through gene-cloning techniques using fermenters/bioreactors","Proteins extracted directly from animal tissues","Proteins that resist antibiotic degradation"], answer:1, explanation:"Recombinant proteins are produced through gene-cloning techniques: inserting human genes into bacteria/mammalian cells, growing in bioreactors, then harvesting and purifying." },
+  { type:"mc", q:"What are Induced Pluripotent Stem Cells (iPSCs)?", options:["Stem cells extracted from embryos","Stem cells created from adult tissue sources without destroying embryos","Stem cells found only in bone marrow","Stem cells used exclusively for skin repair"], answer:1, explanation:"Induced Pluripotent Stem Cells (iPSCs) are created from adult tissue sources without destroying embryos — an ethical approach to stem cell research." },
+  { type:"mc", q:"Which type of biotechnology uses DNA fingerprinting to solve crimes and prove innocence?", options:["Microbial Biotechnology","Medical Biotechnology","Forensic Biotechnology","Agricultural Biotechnology"], answer:2, explanation:"Forensic Biotechnology uses DNA fingerprinting to identify individuals from blood, hair, or saliva; solve crimes; prove innocence; confirm paternity; and trace disease outbreaks." },
+  { type:"mc", q:"Molecular pharming in Agricultural Biotechnology refers to which practice?", options:["Farming using robotic machinery","Using plants (e.g., tobacco) to produce pharmaceutical proteins","Using bacteria to remove farm waste","Selective breeding of high-yield crops"], answer:1, explanation:"Molecular pharming uses plants like tobacco to produce pharmaceutical proteins — a key application of Agricultural Biotechnology." },
+  { type:"mc", q:"What is the primary tool of Quality Control (QC) in biotechnology production?", options:["Patent filing","Laboratory testing during production to maintain consistent quality","Comprehensive oversight of all activities","Clinical trials with human volunteers"], answer:1, explanation:"Quality Control (QC) involves laboratory testing specifically during production to maintain consistent product quality — distinct from Quality Assurance (QA) which oversees all activities." },
+  { type:"tf", q:"True or False: Biotechnology is purely a science of biology and has no connection to engineering, chemistry, or social sciences.", options:["True","False"], answer:1, explanation:"FALSE. Biotechnology is an interdisciplinary science connecting biology, chemistry, physics, engineering, social sciences, and political sciences. It requires collaboration among many fields." },
+  { type:"tf", q:"True or False: Alexander Fleming's discovery of penicillin in 1928 was the start of the antibiotic era.", options:["True","False"], answer:0, explanation:"TRUE. Alexander Fleming discovered that Penicillium mold could stop harmful bacteria growth, leading to penicillin — the first antibiotic — and marking the start of the antibiotic era." },
+  { type:"tf", q:"True or False: The 1000 Genomes Project compared human genes with other organisms to enhance understanding of how genes work.", options:["True","False"], answer:0, explanation:"TRUE. The 1000 Genomes Project (post-2000) compared human genes with other organisms to enhance understanding of how genes work and influence disease resistance." },
+  { type:"tf", q:"True or False: Bioengineered organs from tissue engineering have a HIGHER risk of rejection than donor organs.", options:["True","False"], answer:1, explanation:"FALSE. Bioengineered organs have a LOWER risk of rejection than donor organs — this is one of the key advantages of tissue engineering." },
+  { type:"tf", q:"True or False: Over 65% of US biotechnology companies focus on creating drugs.", options:["True","False"], answer:0, explanation:"TRUE. Over 65% of US biotech companies focus on creating drugs, with 300+ medicines in development targeting 200+ diseases." },
+  { type:"tf", q:"True or False: Global food production must increase approximately 70% by 2050 to meet demand.", options:["True","False"], answer:0, explanation:"TRUE. Agricultural Biotechnology is partly driven by the need for global food production to increase ~70% by 2050 to meet growing demand." },
+  { type:"tf", q:"True or False: Quality Assurance (QA) and Quality Control (QC) are exactly the same thing in biotechnology.", options:["True","False"], answer:1, explanation:"FALSE. QA covers all activities ensuring product safety and meets standards (comprehensive oversight), while QC is laboratory testing during production (product-specific testing)." },
+  { type:"tf", q:"True or False: The EPA monitors environmental impact and pollution control for biotechnology products.", options:["True","False"], answer:0, explanation:"TRUE. The Environmental Protection Agency (EPA) handles environmental impact assessment, pollution control, and safety monitoring for biotechnology." },
+  { type:"id", q:"IDENTIFICATION: This is the branch of biotechnology that uses bacteria, fungi, and plants to break down harmful substances at the sites of the 1989 Exxon Valdez and 2010 Deepwater Horizon disasters.", options:["Aquatic Biotechnology","Agricultural Biotechnology","Bioremediation","Forensic Biotechnology"], answer:2, explanation:"Bioremediation uses living organisms to clean polluted environments. Both the Exxon Valdez and Deepwater Horizon oil spills used microbial enzymes and bacteria for environmental restoration." },
+  { type:"id", q:"IDENTIFICATION: This is the microscopic drug delivery system in nanotechnology that can deliver drugs directly to diseased cells, reducing damage to healthy tissue.", options:["Nanovesicles","Stem cells","Plasmids","Phages"], answer:0, explanation:"Nanovesicles are tiny delivery systems used in nanotechnology to deliver drugs directly to diseased cells, improving precision and reducing collateral damage to healthy tissues." },
+  { type:"id", q:"IDENTIFICATION: This is the historical practice — used since 2000 B.C. — of choosing organisms with desired traits to reproduce, producing larger fruits and higher-yield animals.", options:["Genetic Engineering","Recombinant DNA Technology","Selective Breeding","Molecular Pharming"], answer:2, explanation:"Selective Breeding is the ancient practice of choosing organisms with desired traits to reproduce together, practiced by early civilizations including the Chinese, Greeks, Romans, Babylonians, and Egyptians." },
+  { type:"id", q:"IDENTIFICATION: This genetically engineered protein from goats (ATryn) is an example of this type of animal biotechnology application used for large-scale medicine production.", options:["Gene knockout","Nucleus transfer","Transgenic Animal production","Aquaculture"], answer:2, explanation:"Transgenic Animal production involves genetically modifying animals to produce useful proteins. The ATryn protein from genetically modified goats is a key example of this application." },
+  { type:"id", q:"IDENTIFICATION: This project, completed in 2003, mapped all human genes and revealed that humans have fewer genes than expected, opening a new era of personalized medicine.", options:["1000 Genomes Project","Human Genome Project","Recombinant DNA Project","Human Proteome Project"], answer:1, explanation:"The Human Genome Project (1990–2003) mapped all human genes, revealed humans have fewer genes than expected, and opened new fields in medicine, genetics, and molecular biology." },
+  { type:"id", q:"IDENTIFICATION: This collection of all proteins made by genes is what the Human Genome Project helped scientists better understand through gene-protein interaction insights.", options:["Genome","Proteome","Transcriptome","Metabolome"], answer:1, explanation:"The Proteome is the collection of all proteins made by the genes of an organism. The Human Genome Project provided insights into gene-protein interactions and the proteome." },
+  { type:"id", q:"IDENTIFICATION: This is the protein produced by genetically modified tobacco plants — an example of Agricultural Biotechnology used to produce pharmaceutical proteins.", options:["Biofuel","Molecular pharmed protein","Insulin","Cellulase"], answer:1, explanation:"Molecular pharming uses plants like tobacco to produce pharmaceutical proteins. This is a key Agricultural Biotechnology application." },
+  { type:"id", q:"IDENTIFICATION: This is the gene variation — abbreviated SNP — that explains why the same drug works differently in different patients, and is the basis of pharmacogenomics.", options:["Single Nucleotide Polymorphism","Selective Nucleotide Pair","Somatic Nucleotide Probe","Standard Nucleotide Profile"], answer:0, explanation:"Single Nucleotide Polymorphisms (SNPs) are gene variations that explain why drugs work differently for different people — the basis of pharmacogenomics for personalized treatment design." }
+  ],
+
+  mod2: [
+  { type:"mc", q:"Who created the FIRST recombinant DNA molecule using E. coli and SV40 viral DNA?", options:["Watson and Crick","Hamilton Smith","Paul Berg","Stanley Cohen"], answer:2, explanation:"Paul Berg created the first recombinant DNA molecule in 1972 using E. coli and SV40 viral DNA, combining them with EcoRI and DNA ligase. He received the Nobel Prize in Chemistry in 1980." },
+  { type:"mc", q:"What is the term for the molecular 'scissors' that cut DNA at specific palindromic restriction sites?", options:["DNA Ligase","Restriction Enzymes","Reverse Transcriptase","DNA Polymerase"], answer:1, explanation:"Restriction enzymes are called molecular scissors because they cut DNA precisely at specific palindromic restriction sites — just as scissors cut paper at a specific line." },
+  { type:"mc", q:"EcoRI produces what type of ends after cutting DNA?", options:["Blunt ends","Sticky (cohesive) ends","Phosphorylated ends","Methylated ends"], answer:1, explanation:"EcoRI produces sticky (cohesive) ends — single-stranded overhangs — by cutting at the recognition site G↓AATTC. Sticky ends are PREFERRED for gene cloning." },
+  { type:"mc", q:"In blue-white selection, what does a WHITE colony indicate?", options:["The plasmid re-circularized without insert","A bacterium that did not take up any plasmid","The lacZ gene is disrupted by an insert — a recombinant clone","The bacterium died from antibiotic exposure"], answer:2, explanation:"White colonies indicate the lacZ gene is disrupted by the insert DNA. With no functional β-galactosidase, X-gal cannot be broken down, so the colony stays white — indicating a recombinant clone." },
+  { type:"mc", q:"What is the maximum insert size of a YAC (Yeast Artificial Chromosome)?", options:["6–12 kb","~25 kb","~300 kb","200–2,000 kb"], answer:3, explanation:"YACs (Yeast Artificial Chromosomes) can hold inserts up to 200–2,000 kb (2 megabases) — the largest of any cloning vector. They were essential for the Human Genome Project." },
+  { type:"mc", q:"Which vector was derived from Rhizobium radiobacter and is used to transfer genes into plants for creating GM crops?", options:["Cosmid","BAC","Ti Vector","YAC"], answer:2, explanation:"The Ti Vector (Tumor-Inducing plasmid) is derived from Rhizobium radiobacter. It naturally transfers T-DNA into plant genome; modified to remove harmful genes, it is essential for creating GM crops." },
+  { type:"mc", q:"What enzyme synthesizes cDNA from an mRNA template in cDNA library creation?", options:["DNA Ligase","Restriction Enzyme","Reverse Transcriptase","Taq Polymerase"], answer:2, explanation:"Reverse transcriptase synthesizes single-stranded cDNA from the mRNA template — the key enzyme in creating a cDNA library." },
+  { type:"mc", q:"Why is a cDNA library used to produce eukaryotic proteins in bacteria?", options:["Because bacteria prefer mRNA over DNA","Because cDNA contains introns that improve protein folding","Because bacteria cannot splice introns, and cDNA is made from processed mRNA (no introns)","Because genomic DNA is too large for any vector"], answer:2, explanation:"Bacteria cannot splice introns — they lack the RNA splicing machinery. cDNA is made from mature, processed mRNA (introns already removed), so bacteria can directly read and translate it." },
+  { type:"mc", q:"Which scientist isolated HindIII from Haemophilus influenzae, proving enzymes cut at specific palindromic sequences?", options:["Werner Arber","Hamilton Smith","Paul Berg","Stanley Cohen"], answer:1, explanation:"Hamilton Smith isolated HindIII from H. influenzae, proving that restriction enzymes cut DNA at specific palindromic sequences. He received the Nobel Prize in Medicine in 1978." },
+  { type:"mc", q:"What was the first FDA-approved genetically engineered product, commercialized by Genentech?", options:["Recombinant Human Growth Hormone","Humulin (Recombinant Human Insulin)","Clotting Factor VIII","Erythropoietin"], answer:1, explanation:"Humulin (recombinant human insulin) was the first FDA-approved genetically engineered product (1982). It was cloned by Genentech (Boyer & Swanson), replacing animal-derived insulin." },
+  { type:"mc", q:"What is the function of the Multiple Cloning Site (MCS) on a vector?", options:["It serves as the origin of replication","It provides antibiotic resistance to the host cell","It is a short region with many restriction sites allowing flexible DNA insertion","It is the site where sequencing primers bind"], answer:2, explanation:"The Multiple Cloning Site (MCS) is a short region with restriction sites for many enzymes, allowing flexible DNA insertion without disrupting important vector regions." },
+  { type:"mc", q:"Which vector type is BEST for cloning very large genomic fragments for human chromosome mapping?", options:["Bacterial Plasmid","Bacteriophage Lambda","Cosmid","YAC (Yeast Artificial Chromosome)"], answer:3, explanation:"YACs are best for very large genomic fragments (up to 2 Mb) and were essential for Human Genome Project chromosome mapping. They function like actual chromosomes inside yeast cells." },
+  { type:"mc", q:"What does the DNA probe do during colony hybridization?", options:["It stains all colonies blue","It is a single-stranded DNA sequence that base-pairs with the target gene sequence","It inserts into the target gene to disrupt it","It provides antibiotic resistance to positive colonies"], answer:1, explanation:"A DNA probe is a short, single-stranded DNA sequence complementary to the target gene. Labeled with radioactive isotopes or fluorescent dyes, it hybridizes (base-pairs) with matching sequences on the membrane." },
+  { type:"mc", q:"What is the difference between a genomic library and a cDNA library?", options:["A genomic library uses mRNA while a cDNA library uses chromosomal DNA","A genomic library contains exons+introns+non-coding regions while a cDNA library contains only expressed genes (no introns)","A cDNA library contains the entire genome while a genomic library is tissue-specific","There is no difference between them"], answer:1, explanation:"A genomic library contains ALL of an organism's DNA (exons + introns + intergenic regions), while a cDNA library contains only expressed genes derived from mRNA — no introns, no non-coding regions." },
+  { type:"mc", q:"What is the role of DNA Ligase in gene cloning?", options:["It cuts DNA at specific palindromic sequences","It transports DNA into the host cell","It joins DNA fragments covalently by sealing breaks in the backbone","It copies DNA for PCR amplification"], answer:2, explanation:"DNA ligase joins DNA fragments by sealing breaks in the backbone. After complementary sticky ends join by hydrogen bonding, DNA ligase covalently seals the recombinant plasmid." },
+  { type:"tf", q:"True or False: Blunt ends are PREFERRED over sticky ends for gene cloning because they are more versatile.", options:["True","False"], answer:1, explanation:"FALSE. Sticky ends are PREFERRED for gene cloning because they leave single-stranded overhangs that join specifically and easily with complementary ends. Blunt ends are more versatile but less efficient and specific." },
+  { type:"tf", q:"True or False: Paul Berg received the Nobel Prize in Chemistry in 1980 for creating the first recombinant DNA molecule.", options:["True","False"], answer:0, explanation:"TRUE. Paul Berg received the Nobel Prize in Chemistry in 1980 for creating the first recombinant DNA molecule using E. coli and SV40 viral DNA." },
+  { type:"tf", q:"True or False: A BAC (Bacterial Artificial Chromosome) typically has a high copy number of hundreds of copies per cell, ensuring large amounts of DNA.", options:["True","False"], answer:1, explanation:"FALSE. BACs have a LOW copy number of only 1–2 copies per cell. This low copy number actually ensures STABILITY of large inserts — preventing rearrangements." },
+  { type:"tf", q:"True or False: In gene cloning, both the vector DNA and the insert DNA must be cut with the SAME restriction enzyme to produce compatible ends.", options:["True","False"], answer:0, explanation:"TRUE. Both DNAs must be cut with the same restriction enzyme so that the sticky ends produced are complementary to each other, allowing the insert to join with the vector." },
+  { type:"tf", q:"True or False: Ampicillin selection alone is sufficient to identify recombinant bacteria that contain an insert in the plasmid.", options:["True","False"], answer:1, explanation:"FALSE. Ampicillin selection only confirms that a bacterium took up SOME plasmid. Blue-white selection is also needed to distinguish between bacteria with recombinant plasmid (with insert) vs. empty/re-circularized plasmid." },
+  { type:"tf", q:"True or False: The Watson and Crick DNA double helix discovery in 1953 is the foundation of all molecular biology.", options:["True","False"], answer:0, explanation:"TRUE. Watson and Crick's identification of the DNA double helix in 1953 revealed how genetic information is stored and inherited, forming the foundation of all molecular biology." },
+  { type:"tf", q:"True or False: Restriction enzymes are named after the organism they were derived from.", options:["True","False"], answer:0, explanation:"TRUE. Restriction enzymes are named after their source bacterium (e.g., EcoRI = E. coli R, enzyme I; HindIII = Haemophilus influenzae d, enzyme III)." },
+  { type:"tf", q:"True or False: The Ti vector from Rhizobium radiobacter can be used for gene transfer into animal cells.", options:["True","False"], answer:1, explanation:"FALSE. The Ti vector can only be used in PLANT cells. It naturally integrates T-DNA into plant genomes and is essential for creating GM crops — not for use in animal cells." },
+  { type:"id", q:"IDENTIFICATION: This is the mnemonic for the 3 essential tools of recombinant DNA technology: Scissors, Route, Ligase.", options:["RLS","SRL","LRS","RSL"], answer:1, explanation:"SRL: S = Scissors (restriction enzymes cut DNA), R = Route (plasmid/vector carries DNA into host cell), L = Ligase (DNA ligase joins DNA pieces covalently)." },
+  { type:"id", q:"IDENTIFICATION: This is the mnemonic 'Please Bring Cookies Before Yankees' used to remember cloning vectors in order of increasing insert size.", options:["Plasmid, Bacteriophage, Cosmid, BAC, YAC","Plasmid, BAC, Cosmid, Bacteriophage, YAC","YAC, BAC, Cosmid, Bacteriophage, Plasmid","Cosmid, Plasmid, BAC, Bacteriophage, YAC"], answer:0, explanation:"Please Bring Cookies Before Yankees = Plasmid (~6–12 kb), Bacteriophage lambda (~25 kb), Cosmid (~35 kb), BAC (~300 kb), YAC (200–2,000 kb). In order of increasing insert size." },
+  { type:"id", q:"IDENTIFICATION: This is the scientist who developed bacterial transformation and created pSC101, the first plasmid vector, making him a co-founder of molecular cloning.", options:["Paul Berg","Herbert Boyer","Stanley Cohen","Robert Swanson"], answer:2, explanation:"Stanley Cohen developed bacterial transformation, created pSC101 (the first plasmid vector), and along with Herbert Boyer, co-created the first recombinant clone — making him a co-founder of molecular cloning." },
+  { type:"id", q:"IDENTIFICATION: This step in colony hybridization involves pressing a membrane onto the agar plate to lift a copy of colony positions for screening.", options:["Lysis","Colony transfer (membrane blotting)","Probe hybridization","Autoradiography"], answer:1, explanation:"Colony transfer (membrane blotting) involves pressing a nylon or nitrocellulose membrane onto the agar plate to transfer colony imprints. This membrane is then processed for probe hybridization." },
+  { type:"id", q:"IDENTIFICATION: This is the cloning vector that carries all chromosome elements (telomeres, centromere, ori) and can hold up to 2 megabases of DNA — the largest of any vector.", options:["BAC","Cosmid","YAC","Expression Vector"], answer:2, explanation:"YAC (Yeast Artificial Chromosome) contains all chromosome elements and can hold up to 2 megabases (2,000 kb) of DNA — the largest insert of any cloning vector. Essential for Human Genome Project chromosome mapping." },
+  { type:"id", q:"IDENTIFICATION: This is the type of DNA library that contains only expressed (active) genes and is made using reverse transcriptase from mRNA.", options:["Genomic Library","Shotgun Library","cDNA Library","Cosmid Library"], answer:2, explanation:"A cDNA Library contains only expressed genes, derived from mRNA using reverse transcriptase. It has no introns and no non-coding DNA — making it ideal for producing eukaryotic proteins in bacteria." },
+  { type:"id", q:"IDENTIFICATION: This pair of scientists co-founded Genentech and commercialized the production of recombinant human insulin (Humulin), the first FDA-approved genetically engineered product.", options:["Watson and Crick","Cohen and Berg","Boyer and Swanson","Arber and Nathans"], answer:2, explanation:"Herbert Boyer (molecular biologist) and Robert Swanson (venture capitalist) co-founded Genentech in 1976 and commercialized recombinant human insulin (Humulin) — the first FDA-approved genetically engineered product (1982)." },
+  { type:"id", q:"IDENTIFICATION: This is the recognition sequence for the restriction enzyme EcoRI, which reads the same on both complementary strands in the 5'→3' direction.", options:["A↓AGCTT","G↓AATTC","G↓GATCC","CCC↓GGG"], answer:1, explanation:"EcoRI's recognition site is G↓AATTC — a palindromic sequence that reads the same on both complementary strands in the 5'→3' direction. EcoRI produces sticky (cohesive) ends." }
+  ]
+};
+
+let activeQuizModule = 'mod3';
+let quizQuestions = allQuizData.mod3;
+let currentQuestion = 0;
+let score = 0;
+let answered = [];
+
+const quizModuleNames = { mod1: '🔬 Module 1: Introduction to Biotechnology', mod2: '🧪 Module 2: Recombinant DNA Technology', mod3: '🦠 Module 3: Microbial Biotechnology' };
+
+function setQuizModule(mod, btn) {
+  activeQuizModule = mod;
+  quizQuestions = allQuizData[mod];
+  document.querySelectorAll('.module-select-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Reset to start screen
+  document.getElementById('quizQuestion').classList.remove('active');
+  document.getElementById('quizResults').classList.remove('active');
+  document.getElementById('quizStart').style.display = 'block';
+  document.getElementById('quizModTitle').textContent = quizModuleNames[mod];
+}
+
+function startQuiz() {
+  document.getElementById('quizStart').style.display = 'none';
+  document.getElementById('quizQuestion').classList.add('active');
+  currentQuestion = 0;
+  score = 0;
+  answered = [];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentQuestion];
+  document.getElementById('qProgress').textContent = `Question ${currentQuestion + 1} of ${quizQuestions.length}`;
+  document.getElementById('qScore').textContent = `Score: ${score}`;
+  document.getElementById('quizProgressBar').style.width = ((currentQuestion / quizQuestions.length) * 100) + '%';
+
+  const badge = document.getElementById('qTypeBadge');
+  if (q.type === 'mc') {
+    badge.textContent = 'Multiple Choice';
+    badge.className = 'question-type-badge type-mc';
+  } else if (q.type === 'tf') {
+    badge.textContent = 'True or False';
+    badge.className = 'question-type-badge type-tf';
+  } else {
+    badge.textContent = 'Identification';
+    badge.className = 'question-type-badge type-id';
+  }
+
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('qFeedback').className = 'feedback-box';
+  document.getElementById('qFeedback').textContent = '';
+  document.getElementById('nextBtn').classList.remove('visible');
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const optList = document.getElementById('qOptions');
+  optList.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<button class="option-btn" onclick="selectAnswer(${i})">
+      <span class="option-letter">${letters[i]}</span>
+      ${opt}
+    </button>`;
+    optList.appendChild(li);
+  });
+}
+
+function selectAnswer(selectedIdx) {
+  const q = quizQuestions[currentQuestion];
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(btn => btn.disabled = true);
+  const isCorrect = selectedIdx === q.answer;
+  if (isCorrect) score++;
+  buttons[selectedIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) buttons[q.answer].classList.add('correct');
+  const fb = document.getElementById('qFeedback');
+  fb.className = 'feedback-box ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = (isCorrect ? '✅ Correct! ' : '❌ Incorrect. ') + q.explanation;
+  answered.push({ q: q.q, type: q.type, yourAnswer: q.options[selectedIdx], correct: q.options[q.answer], isCorrect });
+  document.getElementById('nextBtn').classList.add('visible');
+  document.getElementById('qScore').textContent = `Score: ${score}`;
+}
+
+function nextQuestion() {
+  currentQuestion++;
+  if (currentQuestion < quizQuestions.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById('quizQuestion').classList.remove('active');
+  const results = document.getElementById('quizResults');
+  results.classList.add('active');
+  document.getElementById('resultScore').textContent = `${score} / ${quizQuestions.length}`;
+  document.getElementById('resultLabel').textContent = `out of ${quizQuestions.length} questions`;
+  const pct = (score / quizQuestions.length) * 100;
+  let message;
+  if (pct === 100) message = "🏆 Perfect score! Outstanding mastery of Microbial Biotechnology!";
+  else if (pct >= 80) message = "🌟 Excellent work! You have a strong grasp of the material.";
+  else if (pct >= 60) message = "👍 Good job! Review a few more topics to strengthen your understanding.";
+  else if (pct >= 40) message = "📖 Keep studying! Review the reviewer for key concepts.";
+  else message = "💪 Don't give up! Go through the reviewer carefully and try again.";
+  document.getElementById('resultMessage').textContent = message;
+
+  const typeLabels = { mc: '🔵 MC', tf: '🟢 T/F', id: '🟡 ID' };
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  answered.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (item.isCorrect ? 'correct' : 'wrong');
+    div.innerHTML = `<div class="q-text"><span style="font-size:0.75rem;margin-right:4px;opacity:0.7">${typeLabels[item.type]||''}</span>${i + 1}. ${item.q}</div>
+      <div class="a-text">Your answer: <strong>${item.yourAnswer}</strong>${!item.isCorrect ? ` &nbsp;|&nbsp; ✅ Correct: <strong>${item.correct}</strong>` : ''}</div>`;
+    reviewList.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  document.getElementById('quizResults').classList.remove('active');
+  document.getElementById('quizStart').style.display = 'block';
+  currentQuestion = 0;
+  score = 0;
+  answered = [];
+}
+
+// Init
+renderFlashcard();
+</script>
+</body>
+</html>
