@@ -738,6 +738,58 @@
   .set-select-btn:hover { border-color: var(--teal); color: var(--teal); }
   .set-select-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
 
+  /* PDF Viewer */
+  .pdf-mod-btn {
+    background: var(--card-bg);
+    border: 2px solid var(--mint);
+    border-radius: 20px;
+    padding: 0.45rem 1.3rem;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    color: var(--dark);
+    transition: all 0.2s;
+  }
+  .pdf-mod-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .pdf-mod-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
+  .pdf-label {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 0.6rem;
+  }
+  .pdf-frame-wrap {
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    background: #f5f5f5;
+    margin-bottom: 1rem;
+  }
+  .pdf-frame {
+    width: 100%;
+    height: 80vh;
+    min-height: 500px;
+    border: none;
+    display: block;
+  }
+  .pdf-links { text-align: center; }
+  .pdf-direct-btn {
+    display: inline-block;
+    background: var(--teal);
+    color: white;
+    text-decoration: none;
+    padding: 0.55rem 1.4rem;
+    border-radius: 25px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    transition: background 0.2s;
+  }
+  .pdf-direct-btn:hover { background: var(--forest); }
+
   .question-text {
     font-size: 1rem;
     font-weight: 700;
@@ -1005,6 +1057,11 @@
       <h3>Quiz</h3>
       <p>Test your knowledge — 35 questions per module</p>
     </div>
+    <div class="home-card" onclick="showPage('reviewer'); setReviewerModule('slides')">
+      <div class="icon">📄</div>
+      <h3>PDF Slides</h3>
+      <p>View the original slide decks for all 3 modules</p>
+    </div>
   </div>
 </div>
 
@@ -1016,6 +1073,7 @@
     <button class="reviewer-tab active" id="tab-mod1" onclick="setReviewerModule('mod1')">🔬 Module 1</button>
     <button class="reviewer-tab" id="tab-mod2" onclick="setReviewerModule('mod2')">🧪 Module 2</button>
     <button class="reviewer-tab" id="tab-mod3" onclick="setReviewerModule('mod3')">🦠 Module 3</button>
+    <button class="reviewer-tab" id="tab-slides" onclick="setReviewerModule('slides')" style="margin-left:auto;">📄 PDF Slides</button>
   </div>
 
   <!-- ===== MODULE 1 CONTENT ===== -->
@@ -2119,8 +2177,49 @@
 
   </div><!-- end reviewer-mod3 -->
 
-</div>
-<!-- end #reviewer -->
+  <!-- ===== PDF SLIDES SECTION ===== -->
+  <div id="reviewer-slides" class="reviewer-module" style="display:none;">
+  <div class="module-header" style="background:linear-gradient(135deg,#2c3e50,#1a7a3c);">
+    <div class="module-icon">📄</div>
+    <div>
+      <h1>PDF Slides</h1>
+      <p>View the original slide decks for each module</p>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.2rem;">
+      <button class="pdf-mod-btn active" id="pdfBtn1" onclick="showPDF(1)">🔬 Module 1</button>
+      <button class="pdf-mod-btn" id="pdfBtn2" onclick="showPDF(2)">🧪 Module 2</button>
+      <button class="pdf-mod-btn" id="pdfBtn3" onclick="showPDF(3)">🦠 Module 3</button>
+    </div>
+
+    <!-- PDF labels -->
+    <div id="pdfLabel1" class="pdf-label">📘 Module 1: Biotechnology and Its Workforce</div>
+    <div id="pdfLabel2" class="pdf-label" style="display:none;">📗 Module 2: Recombinant DNA Technology</div>
+    <div id="pdfLabel3" class="pdf-label" style="display:none;">📙 Module 3: Microbial Biotechnology</div>
+
+    <!-- PDF iframes -->
+    <div class="pdf-frame-wrap">
+      <iframe id="pdfFrame1" class="pdf-frame"
+        src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/maryathenahernandez-bit/BIOTECH_QUIZBEE/main/MODULE-1_BIOTECHNOLOGY-AND-ITS-WORKFORCE.pdf&embedded=true"
+        allowfullscreen></iframe>
+      <iframe id="pdfFrame2" class="pdf-frame" style="display:none;"
+        src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/maryathenahernandez-bit/BIOTECH_QUIZBEE/main/MODULE-2_RECOMBINANT-DNA-TECHNOLOGY_compressed.pdf&embedded=true"
+        allowfullscreen></iframe>
+      <iframe id="pdfFrame3" class="pdf-frame" style="display:none;"
+        src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/maryathenahernandez-bit/BIOTECH_QUIZBEE/main/Module-3-Microbial-Biotechnology.pdf&embedded=true"
+        allowfullscreen></iframe>
+    </div>
+
+    <div class="pdf-links">
+      <p style="color:#666;font-size:0.85rem;margin-bottom:0.6rem;">If the viewer doesn't load, open the PDF directly:</p>
+      <a class="pdf-direct-btn" href="https://raw.githubusercontent.com/maryathenahernandez-bit/BIOTECH_QUIZBEE/main/MODULE-1_BIOTECHNOLOGY-AND-ITS-WORKFORCE.pdf" target="_blank" id="pdfDirect1">⬇️ Open Module 1 PDF</a>
+      <a class="pdf-direct-btn" href="https://raw.githubusercontent.com/maryathenahernandez-bit/BIOTECH_QUIZBEE/main/MODULE-2_RECOMBINANT-DNA-TECHNOLOGY_compressed.pdf" target="_blank" id="pdfDirect2" style="display:none;">⬇️ Open Module 2 PDF</a>
+      <a class="pdf-direct-btn" href="https://raw.githubusercontent.com/maryathenahernandez-bit/BIOTECH_QUIZBEE/main/Module-3-Microbial-Biotechnology.pdf" target="_blank" id="pdfDirect3" style="display:none;">⬇️ Open Module 3 PDF</a>
+    </div>
+  </div>
+  </div><!-- end reviewer-slides -->
 
 <!-- ===== FLASHCARDS PAGE ===== -->
 <div id="flashcards" class="page">
@@ -2250,6 +2349,15 @@ function setReviewerModule(mod) {
   document.querySelectorAll('.reviewer-tab').forEach(t => t.classList.remove('active'));
   const tab = document.getElementById('tab-' + mod);
   if (tab) tab.classList.add('active');
+}
+
+function showPDF(num) {
+  [1,2,3].forEach(n => {
+    document.getElementById('pdfFrame' + n).style.display = n === num ? 'block' : 'none';
+    document.getElementById('pdfLabel' + n).style.display = n === num ? 'block' : 'none';
+    document.getElementById('pdfDirect' + n).style.display = n === num ? 'inline-block' : 'none';
+    document.getElementById('pdfBtn' + n).classList.toggle('active', n === num);
+  });
 }
 
 // ===== FLASHCARD DATA =====
